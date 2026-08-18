@@ -193,7 +193,7 @@ export function ParticipantDetailsStep({
             <div className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs flex items-center gap-2.5">
               <FileCheck className="w-4 h-4 text-emerald-600" />
               <div>
-                <p className="font-semibold text-slate-800">Dossier Attached</p>
+                <p className="font-semibold text-slate-800">Modules Submitted</p>
                 <p className="text-[11px] text-slate-500 font-mono">{uploadedCount} of 9 Modules</p>
               </div>
             </div>

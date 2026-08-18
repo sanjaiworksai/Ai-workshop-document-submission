@@ -118,13 +118,13 @@ function drawCertificatePage(
   doc.setFont('times', 'bold');
   doc.setFontSize(24);
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('CERTIFICATE OF SUBMISSION & COMPLIANCE', width / 2, 40, { align: 'center' });
+  doc.text('AI-WORKSHOP CERTIFICATE OF COMPLETION', width / 2, 40, { align: 'center' });
 
   // 6. Sub-title
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9.5);
   doc.setTextColor(100, 116, 139);
-  doc.text('DOCUMENTATION DOSSIER VALIDATION & STATUTORY AUDIT CLEARANCE', width / 2, 46, { align: 'center' });
+  doc.text('AI-WORKSHOP SUBMISSION PORTAL • OFFICIAL VERIFIED CERTIFICATION', width / 2, 46, { align: 'center' });
 
   // 7. "This is proudly presented to"
   doc.setFont('times', 'italic');
@@ -156,7 +156,7 @@ function drawCertificatePage(
   doc.setFontSize(10);
   doc.setTextColor(71, 85, 105);
   const bodyText =
-    'has successfully compiled, uploaded, cross-verified, and fulfilled all mandatory administrative and legal documentation requirements under the statutory audit guidelines. The complete 9-part dossier outlined below has been thoroughly validated:';
+    'has successfully compiled, submitted, and completed all 9 core workshop modules on the AI-Workshop Submission Portal. All submissions and practical exercises have been verified with complete technical compliance:';
   
   const splitBody = doc.splitTextToSize(bodyText, width - 60);
   doc.text(splitBody, width / 2, 85, { align: 'center' });
@@ -328,7 +328,7 @@ function drawCertificatePage(
   doc.setFontSize(5.5);
   doc.setTextColor(148, 163, 184);
   doc.text(
-    'This is a digitally generated and cryptographically verifiable certificate issued upon successful validation of all 9 statutory dossier components.',
+    'This is a digitally generated and cryptographically verifiable certificate issued upon successful completion of all 9 AI-Workshop modules.',
     width / 2,
     height - 14,
     { align: 'center' }
@@ -367,7 +367,7 @@ function drawGroupMasterRosterPage(
   doc.roundedRect(15, 15, width - 30, height - 30, 2, 2, 'D');
 
   // Header
-  const orgName = options.organization || 'STATE ADMINISTRATIVE & LEGAL COMPLIANCE DIRECTORATE';
+  const orgName = options.organization || 'AI-WORKSHOP SUBMISSION PORTAL';
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
@@ -376,13 +376,13 @@ function drawGroupMasterRosterPage(
   doc.setFont('times', 'bold');
   doc.setFontSize(20);
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('GROUP DOSSIER COMPLETION & ENDORSEMENT CERTIFICATE', width / 2, 34, { align: 'center' });
+  doc.text('GROUP AI-WORKSHOP COMPLETION CERTIFICATE', width / 2, 34, { align: 'center' });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
   doc.text(
-    `Official Group Compilation Record • Total ${participants.length} Certified Team Members • All 9 Modules Validated`,
+    `Official Workshop Group Record • Total ${participants.length} Certified Participants • All 9 Modules Completed`,
     width / 2,
     40,
     { align: 'center' }
@@ -548,7 +548,7 @@ export function downloadSingleCertificate(
 export function downloadGroupCertificatesBundle(
   participants: Participant[],
   options: GenerateOptions = {},
-  groupName = 'Group_Dossier'
+  groupName = 'AI_Workshop_Group'
 ) {
   const doc = generateGroupCertificatesPDF(participants, options, true);
   const cleanGroup = groupName.replace(/[^a-zA-Z0-9]/g, '_');

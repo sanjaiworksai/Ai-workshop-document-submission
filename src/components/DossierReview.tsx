@@ -45,10 +45,10 @@ export function DossierReview({
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-800/60 text-emerald-400 text-xs font-semibold mb-2">
             <ShieldCheck className="w-3.5 h-3.5" />
-            Statutory Dossier Audit & Cross-Verification
+            AI-Workshop Module Review & Verification
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white font-serif">
-            9-Module Dossier Compliance Review
+            9-Module AI-Workshop Compliance Review
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Review all submitted documents, extracted gists, and statutory verification status before official certificate generation.
@@ -115,7 +115,7 @@ export function DossierReview({
         <div className="px-6 py-4 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-white font-serif">
-              Statutory 9-Heading Dossier Itemized Breakdown
+              9-Heading AI-Workshop Itemized Module Breakdown
             </h3>
             <p className="text-xs text-slate-400">
               Each document fulfills statutory audit requirements

@@ -18,7 +18,6 @@ import {
   Presentation,
   CheckSquare,
   FileCheck,
-  Check,
 } from 'lucide-react';
 import { DocumentPreviewModal } from './DocumentPreviewModal';
 
@@ -100,17 +99,6 @@ export function DocumentUploadPortal({
     });
   };
 
-  const handleQuickSubmitAll = () => {
-    DOCUMENT_CATEGORIES.forEach((cat) => {
-      if (!documents[cat.id]) {
-        const mockFile = new File(['statutory submission content'], `${cat.id}_verified_submission.pdf`, {
-          type: 'application/pdf',
-        });
-        handleFileUpload(cat.id, mockFile);
-      }
-    });
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
       {/* Top Banner & Quick Action Bar */}
@@ -149,47 +137,6 @@ export function DocumentUploadPortal({
               <Upload className="w-4 h-4 text-sky-400" />
               Batch Select Files (All 9 Modules)
             </button>
-
-            {!isAllUploaded && (
-              <button
-                type="button"
-                onClick={handleQuickSubmitAll}
-                className="px-4 py-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-xs font-semibold text-sky-700 border border-sky-200 flex items-center gap-1.5 transition cursor-pointer"
-              >
-                <Check className="w-3.5 h-3.5 text-sky-600" />
-                Quick Check-Off All 9
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Upload Progress Bar */}
-        <div className="mt-6 pt-5 border-t border-slate-100">
-          <div className="flex items-center justify-between text-xs mb-2">
-            <span className="text-slate-700 font-medium flex items-center gap-2">
-              <FileCheck className="w-4 h-4 text-sky-600" />
-              Dossier Completeness:
-              <strong className="text-slate-900 font-mono">
-                {uploadedCount} of {totalCount} Modules Submitted
-              </strong>
-            </span>
-            <span
-              className={`font-mono font-bold ${
-                isAllUploaded ? 'text-emerald-600' : 'text-sky-600'
-              }`}
-            >
-              {progressPercent}%
-            </span>
-          </div>
-          <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-200">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                isAllUploaded
-                  ? 'bg-emerald-500'
-                  : 'bg-gradient-to-r from-sky-500 to-indigo-600'
-              }`}
-              style={{ width: `${progressPercent}%` }}
-            />
           </div>
         </div>
       </div>
@@ -375,13 +322,13 @@ export function DocumentUploadPortal({
               className={`w-5 h-5 ${isAllUploaded ? 'text-emerald-600' : 'text-slate-400'}`}
             />
             {isAllUploaded
-              ? 'All 9 Documentation Modules Submitted & Verified'
-              : 'Dossier Submission Progress'}
+              ? 'All 9 Workshop Modules Submitted & Ready'
+              : 'AI-Workshop Module Submissions'}
           </h3>
           <p className="text-xs text-slate-600 mt-1">
             {isAllUploaded
               ? 'All 9 modules submitted. Proceed to candidate information and certificate issuance.'
-              : `${uploadedCount} of 9 modules submitted. Click below to continue to participant details.`}
+              : `${uploadedCount} of 9 workshop modules submitted. Click below to continue to participant details.`}
           </p>
         </div>
 

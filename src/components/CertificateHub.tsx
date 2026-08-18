@@ -77,7 +77,7 @@ export function CertificateHub({
 
     setTimeout(() => {
       downloadSingleCertificate(p, {
-        submissionTitle: 'Official Certificate of Statutory Compliance & Dossier Verification',
+        submissionTitle: 'Official AI-Workshop Completion & Certification',
         theme,
         organization: organizationName,
         signatory1Name,
@@ -99,7 +99,7 @@ export function CertificateHub({
 
     setTimeout(() => {
       downloadGroupCertificatesBundle(groupParticipants, {
-        submissionTitle: 'Official Certificate of Statutory Compliance & Dossier Verification',
+        submissionTitle: 'Official AI-Workshop Completion & Certification',
         theme,
         organization: organizationName,
         signatory1Name,
@@ -271,11 +271,11 @@ export function CertificateHub({
                 </p>
 
                 <h2 className="text-2xl sm:text-4xl font-bold font-serif tracking-tight text-slate-900 mt-2">
-                  Certificate of Compliance
+                  AI-Workshop Certificate of Completion
                 </h2>
 
                 <p className="text-xs uppercase tracking-widest text-slate-500 font-mono mt-1">
-                  Statutory Administrative & Legal Dossier Verification
+                  AI-Workshop Submission Portal • Official Certification
                 </p>
 
                 <div className="w-24 h-0.5 bg-amber-500 mx-auto my-4" />
@@ -296,9 +296,8 @@ export function CertificateHub({
                 </p>
 
                 <p className="text-xs text-slate-600 max-w-xl mx-auto leading-relaxed pt-2">
-                  has successfully submitted, verified, and audited all 9 statutory documentation
-                  modules comprising the official Administrative Dossier in full compliance with
-                  prescribed regulatory guidelines.
+                  has successfully submitted, fulfilled, and completed all 9 core workshop
+                  modules on the AI-Workshop Submission Portal with verified proficiency.
                 </p>
 
                 {/* 9 Headings Compact Grid in Certificate */}
@@ -405,8 +404,8 @@ export function CertificateHub({
                 <span className="font-bold text-slate-800">{activeParticipant.certificateNumber}</span>
               </p>
               <p className="flex justify-between">
-                <span className="text-slate-500">Attached Dossier:</span>
-                <span className="font-bold text-emerald-700">9 Mandatory Modules</span>
+                <span className="text-slate-500">Workshop Modules:</span>
+                <span className="font-bold text-emerald-700">9 Completed Modules</span>
               </p>
             </div>
           </div>
@@ -447,7 +446,7 @@ export function CertificateHub({
           <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-3">
             <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              Attached Statutory Dossier
+              AI-Workshop Modules
             </h3>
 
             <div className="space-y-1.5 text-xs">
