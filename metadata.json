@@ -1,0 +1,6 @@
+{
+  "name": "AI-Workshop Submission Portal",
+  "description": "Upload key workshop documents and modules (Court Order Gist, G.O. Summary, Inspection Reports, PPTs, Checklists), configure candidates, and generate verified completion certificates in PDF format.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
