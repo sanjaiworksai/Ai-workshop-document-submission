@@ -1,6 +1,6 @@
-import { useState, FormEvent, MouseEvent, useEffect } from 'react';
-import { UserSession, AccountSummary } from '../types';
-import { getAllAccounts, removeAccount, normalizeEmail } from '../utils/storage';
+import { useState, FormEvent } from 'react';
+import { UserSession } from '../types';
+import { normalizeEmail } from '../utils/storage';
 import {
   ShieldCheck,
   Mail,
@@ -8,8 +8,6 @@ import {
   Lock,
   CheckCircle2,
   Award,
-  Users,
-  Trash2,
   User,
 } from 'lucide-react';
 
@@ -23,11 +21,6 @@ export function AuthScreen({ onLogin, defaultEmail = '' }: AuthScreenProps) {
   const [fullName, setFullName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [savedAccounts, setSavedAccounts] = useState<AccountSummary[]>([]);
-
-  useEffect(() => {
-    setSavedAccounts(getAllAccounts());
-  }, []);
 
   const handleLoginWithEmail = (targetEmail: string, customName?: string) => {
     const cleanEmail = normalizeEmail(targetEmail);
@@ -63,14 +56,6 @@ export function AuthScreen({ onLogin, defaultEmail = '' }: AuthScreenProps) {
     handleLoginWithEmail(email, fullName);
   };
 
-  const handleDeleteAccountData = (e: MouseEvent, targetEmail: string) => {
-    e.stopPropagation();
-    if (window.confirm(`Remove saved workspace data for ${targetEmail}?`)) {
-      removeAccount(targetEmail);
-      setSavedAccounts(getAllAccounts());
-    }
-  };
-
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background Soft Gradients */}
@@ -99,58 +84,7 @@ export function AuthScreen({ onLogin, defaultEmail = '' }: AuthScreenProps) {
         </div>
       </div>
 
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md z-10 space-y-4">
-        {/* Saved Accounts on this Device (if any) */}
-        {savedAccounts.length > 0 && (
-          <div className="bg-white border border-slate-200/90 py-5 px-6 shadow-md rounded-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-sky-600" />
-                Previous Workspaces ({savedAccounts.length})
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">Select to Open</span>
-            </div>
-
-            <div className="space-y-2">
-              {savedAccounts.map((acc) => (
-                <div
-                  key={acc.email}
-                  onClick={() => handleLoginWithEmail(acc.email, acc.name)}
-                  className="p-3 rounded-xl bg-slate-50 hover:bg-sky-50/60 border border-slate-200/80 hover:border-sky-300 transition flex items-center justify-between cursor-pointer group"
-                >
-                  <div className="flex items-center space-x-3 overflow-hidden">
-                    <div className="w-8 h-8 rounded-full bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-xs shrink-0">
-                      {acc.name.charAt(0)}
-                    </div>
-                    <div className="truncate">
-                      <p className="text-xs font-bold text-slate-900 group-hover:text-sky-900 truncate">
-                        {acc.name}
-                      </p>
-                      <p className="text-[11px] text-slate-500 font-mono truncate">{acc.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2 shrink-0">
-                    <div className="text-right hidden sm:block">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 font-mono">
-                        {acc.uploadedCount}/9 Modules
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={(e) => handleDeleteAccountData(e, acc.email)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
-                      title="Delete account data"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md z-10">
         {/* Login Form */}
         <div className="bg-white border border-slate-200/90 py-8 px-6 sm:px-10 shadow-xl rounded-2xl">
           <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">

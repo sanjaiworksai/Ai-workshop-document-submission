@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { UserSession, AccountSummary } from '../types';
-import { getAllAccounts } from '../utils/storage';
+import { useState } from 'react';
+import { UserSession } from '../types';
 import {
   Award,
   LogOut,
@@ -10,8 +9,6 @@ import {
   ShieldCheck,
   ChevronDown,
   UserPlus,
-  Check,
-  Building,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -21,7 +18,7 @@ interface HeaderProps {
   uploadedCount: number;
   totalCount: number;
   onLogout: () => void;
-  onSwitchUser: (email: string) => void;
+  onSwitchUser?: (email: string) => void;
 }
 
 export function Header({
@@ -31,14 +28,8 @@ export function Header({
   uploadedCount,
   totalCount,
   onLogout,
-  onSwitchUser,
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [accounts, setAccounts] = useState<AccountSummary[]>([]);
-
-  useEffect(() => {
-    setAccounts(getAllAccounts());
-  }, [user, isMenuOpen]);
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
@@ -162,39 +153,6 @@ export function Header({
                     </div>
                   </div>
 
-                  {/* Switch to Other Accounts */}
-                  {accounts.length > 1 && (
-                    <div className="py-2 border-b border-slate-100">
-                      <span className="px-4 text-[10px] uppercase font-bold text-slate-400 tracking-wider block mb-1.5">
-                        Switch Account / Workspace
-                      </span>
-                      <div className="max-h-40 overflow-y-auto space-y-1 px-2">
-                        {accounts
-                          .filter((acc) => acc.email !== user.email)
-                          .map((acc) => (
-                            <button
-                              key={acc.email}
-                              type="button"
-                              onClick={() => {
-                                setIsMenuOpen(false);
-                                onSwitchUser(acc.email);
-                              }}
-                              className="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-slate-50 transition flex items-center justify-between group cursor-pointer"
-                            >
-                              <div className="truncate">
-                                <p className="font-semibold text-slate-800 group-hover:text-sky-600 truncate text-xs">
-                                  {acc.name}
-                                </p>
-                                <p className="text-[10px] text-slate-400 font-mono truncate">
-                                  {acc.email} ({acc.uploadedCount}/9 Docs)
-                                </p>
-                              </div>
-                            </button>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
                   {/* Actions */}
                   <div className="pt-2 px-2 space-y-1">
                     <button
@@ -206,7 +164,7 @@ export function Header({
                       className="w-full text-left px-3 py-2 rounded-xl text-sky-700 hover:bg-sky-50 font-semibold flex items-center gap-2 transition cursor-pointer"
                     >
                       <UserPlus className="w-3.5 h-3.5" />
-                      Sign In with Another Gmail ID
+                      Sign In with Another Email ID
                     </button>
 
                     <button

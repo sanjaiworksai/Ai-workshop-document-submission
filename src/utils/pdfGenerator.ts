@@ -118,13 +118,13 @@ function drawCertificatePage(
   doc.setFont('times', 'bold');
   doc.setFontSize(24);
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('AI-WORKSHOP CERTIFICATE OF COMPLETION', width / 2, 40, { align: 'center' });
+  doc.text('CERTIFICATE OF COMPLETION', width / 2, 40, { align: 'center' });
 
   // 6. Sub-title
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9.5);
   doc.setTextColor(100, 116, 139);
-  doc.text('AI-WORKSHOP SUBMISSION PORTAL • OFFICIAL VERIFIED CERTIFICATION', width / 2, 46, { align: 'center' });
+  doc.text('OFFICIAL VERIFIED CERTIFICATION', width / 2, 46, { align: 'center' });
 
   // 7. "This is proudly presented to"
   doc.setFont('times', 'italic');
@@ -156,7 +156,7 @@ function drawCertificatePage(
   doc.setFontSize(10);
   doc.setTextColor(71, 85, 105);
   const bodyText =
-    'has successfully compiled, submitted, and completed all 9 core workshop modules on the AI-Workshop Submission Portal. All submissions and practical exercises have been verified with complete technical compliance:';
+    'has successfully compiled, submitted, and completed all 9 core statutory and technical modules. All submissions and practical exercises have been verified with complete technical compliance:';
   
   const splitBody = doc.splitTextToSize(bodyText, width - 60);
   doc.text(splitBody, width / 2, 85, { align: 'center' });
@@ -200,44 +200,37 @@ function drawCertificatePage(
     doc.text('VERIFIED', x + colWidth - 16, y + 6.2);
   });
 
-  // 12. Bottom Section: Left Metadata / Security QR, Center Seal, Right Signatures
-  const bottomY = 145;
+  // 12. Bottom Section: Left Metadata, Center Seal, Right Single Signature (Thiru . Vishu Mahajan I.A.S)
+  const bottomY = 148;
 
-  // Left: Security & Serial details
+  // Left: Security & Serial details (No QR code)
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7.5);
   doc.setTextColor(71, 85, 105);
   doc.text('CERTIFICATE ID:', 24, bottomY);
   doc.setFont('courier', 'bold');
-  doc.setFontSize(8.5);
+  doc.setFontSize(9);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text(participant.certificateNumber, 24, bottomY + 5);
+  doc.text(participant.certificateNumber, 24, bottomY + 5.5);
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
+  doc.setFontSize(7.5);
   doc.setTextColor(100, 116, 139);
-  doc.text(`Issue Date: ${participant.issueDate}`, 24, bottomY + 10);
-  doc.text(`Verification Hash: ${participant.verificationCode}`, 24, bottomY + 14);
-  doc.text('Status: Officially Endorsed & Tamper-Evident', 24, bottomY + 18);
-
-  // Security QR Code Mockup box
-  doc.setDrawColor(203, 213, 225);
-  doc.setLineWidth(0.4);
-  doc.rect(24, bottomY + 22, 20, 20, 'D');
-  doc.setFillColor(15, 23, 42);
-  // draw mini QR pattern
-  doc.rect(26, bottomY + 24, 6, 6, 'F');
-  doc.rect(36, bottomY + 24, 6, 6, 'F');
-  doc.rect(26, bottomY + 34, 6, 6, 'F');
-  doc.rect(34, bottomY + 32, 4, 4, 'F');
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(5);
-  doc.setTextColor(148, 163, 184);
-  doc.text('SCAN TO VERIFY', 24, bottomY + 45);
+  doc.text(`Issue Date: ${participant.issueDate}`, 24, bottomY + 11);
+  doc.text(`Verification Hash: ${participant.verificationCode}`, 24, bottomY + 16);
+  
+  doc.setFillColor(240, 253, 244);
+  doc.setDrawColor(187, 247, 208);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(24, bottomY + 20, 52, 6, 1, 1, 'FD');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(6.5);
+  doc.setTextColor(22, 101, 52);
+  doc.text('✓ Authenticated & Digitally Certified', 26, bottomY + 24.2);
 
   // Center: Official Emblem / Seal
   const sealCenterX = width / 2;
-  const sealCenterY = bottomY + 18;
+  const sealCenterY = bottomY + 14;
 
   // Outer scalloped ring
   doc.setDrawColor(colors.seal[0], colors.seal[1], colors.seal[2]);
@@ -275,60 +268,39 @@ function drawCertificatePage(
     'F'
   );
 
-  // Right: Dual Signatures
-  const sig1X = width - 90;
-  const sig2X = width - 35;
-  const sigLineY = bottomY + 22;
+  // Right: Single Signature (Thiru . Vishu Mahajan I.A.S)
+  const sigX = width - 55;
+  const sigLineY = bottomY + 18;
 
-  // Signature 1
   doc.setDrawColor(148, 163, 184);
   doc.setLineWidth(0.6);
-  doc.line(sig1X - 25, sigLineY, sig1X + 25, sigLineY);
+  doc.line(sigX - 35, sigLineY, sigX + 35, sigLineY);
 
-  // Script signature approximation
+  // Script signature text
   doc.setFont('times', 'italic');
-  doc.setFontSize(11);
+  doc.setFontSize(12);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text('R. Sundaram', sig1X, sigLineY - 3, { align: 'center' });
+  doc.text('Vishu Mahajan', sigX, sigLineY - 3, { align: 'center' });
+
+  const singleSignerName = options.signatory1Name || 'Thiru . Vishu Mahajan I.A.S';
+  const singleSignerTitle = options.signatory1Title || 'Authorized Signatory';
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
+  doc.setFontSize(8.5);
   doc.setTextColor(30, 41, 59);
-  const sig1Name = options.signatory1Name || 'Dr. R. Sundaram, IAS';
-  const sig1Title = options.signatory1Title || 'Reviewing Authority';
-  doc.text(sig1Name, sig1X, sigLineY + 4, { align: 'center' });
+  doc.text(singleSignerName, sigX, sigLineY + 5, { align: 'center' });
+
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.5);
+  doc.setFontSize(7);
   doc.setTextColor(100, 116, 139);
-  doc.text(sig1Title, sig1X, sigLineY + 8, { align: 'center' });
-
-  // Signature 2
-  doc.setDrawColor(148, 163, 184);
-  doc.setLineWidth(0.6);
-  doc.line(sig2X - 25, sigLineY, sig2X + 20, sigLineY);
-
-  doc.setFont('times', 'italic');
-  doc.setFontSize(11);
-  doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text('V. Verma', sig2X - 2, sigLineY - 3, { align: 'center' });
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
-  doc.setTextColor(30, 41, 59);
-  const sig2Name = options.signatory2Name || 'Adv. V. Verma';
-  const sig2Title = options.signatory2Title || 'Chief Legal Auditor';
-  doc.text(sig2Name, sig2X - 2, sigLineY + 4, { align: 'center' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.5);
-  doc.setTextColor(100, 116, 139);
-  doc.text(sig2Title, sig2X - 2, sigLineY + 8, { align: 'center' });
+  doc.text(singleSignerTitle, sigX, sigLineY + 9.5, { align: 'center' });
 
   // Bottom tiny verification disclaimer
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(5.5);
   doc.setTextColor(148, 163, 184);
   doc.text(
-    'This is a digitally generated and cryptographically verifiable certificate issued upon successful completion of all 9 AI-Workshop modules.',
+    'This is a digitally generated and cryptographically verifiable certificate issued upon successful completion of all 9 modules.',
     width / 2,
     height - 14,
     { align: 'center' }
@@ -367,7 +339,7 @@ function drawGroupMasterRosterPage(
   doc.roundedRect(15, 15, width - 30, height - 30, 2, 2, 'D');
 
   // Header
-  const orgName = options.organization || 'AI-WORKSHOP SUBMISSION PORTAL';
+  const orgName = options.organization || 'STATE ADMINISTRATIVE & LEGAL DIRECTORATE';
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
@@ -376,13 +348,13 @@ function drawGroupMasterRosterPage(
   doc.setFont('times', 'bold');
   doc.setFontSize(20);
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('GROUP AI-WORKSHOP COMPLETION CERTIFICATE', width / 2, 34, { align: 'center' });
+  doc.text('GROUP COMPLETION & ENDORSEMENT CERTIFICATE', width / 2, 34, { align: 'center' });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
   doc.text(
-    `Official Workshop Group Record • Total ${participants.length} Certified Participants • All 9 Modules Completed`,
+    `Official Group Record • Total ${participants.length} Certified Participants • All 9 Modules Completed`,
     width / 2,
     40,
     { align: 'center' }
@@ -468,30 +440,39 @@ function drawGroupMasterRosterPage(
     doc.text(cat.title, px + 22, py + 4.2);
   });
 
-  // Footer & Signatures
-  const footerY = height - 32;
+  // Footer: Left Official Status & Right Single Signature
+  const footerY = height - 30;
+  
+  // Left: Verification status
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(71, 85, 105);
+  doc.text('OFFICIAL RECORD CLEARANCE:', tableX, footerY + 2);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.5);
+  doc.setTextColor(100, 116, 139);
+  doc.text(`Authenticated Roster • Date: ${new Date().toLocaleDateString()}`, tableX, footerY + 6);
+  doc.text('Status: All listed participants verified and cleared for certification', tableX, footerY + 10);
+
+  // Right: Single Signature
+  const sigX = width - tableX - 35;
   doc.setDrawColor(148, 163, 184);
   doc.setLineWidth(0.5);
+  doc.line(sigX - 30, footerY + 2, sigX + 30, footerY + 2);
 
-  doc.line(tableX, footerY, tableX + 60, footerY);
+  doc.setFont('times', 'italic');
+  doc.setFontSize(10);
+  doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
+  doc.text('Vishu Mahajan', sigX, footerY - 1, { align: 'center' });
+
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7.5);
   doc.setTextColor(30, 41, 59);
-  doc.text(options.signatory1Name || 'Dr. R. Sundaram, IAS', tableX + 30, footerY + 4, { align: 'center' });
+  doc.text(options.signatory1Name || 'Thiru . Vishu Mahajan I.A.S', sigX, footerY + 6, { align: 'center' });
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.5);
   doc.setTextColor(100, 116, 139);
-  doc.text(options.signatory1Title || 'Reviewing Authority', tableX + 30, footerY + 8, { align: 'center' });
-
-  doc.line(width - tableX - 60, footerY, width - tableX, footerY);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(7.5);
-  doc.setTextColor(30, 41, 59);
-  doc.text(options.signatory2Name || 'Adv. V. Verma', width - tableX - 30, footerY + 4, { align: 'center' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.5);
-  doc.setTextColor(100, 116, 139);
-  doc.text(options.signatory2Title || 'Chief Legal Auditor', width - tableX - 30, footerY + 8, { align: 'center' });
+  doc.text(options.signatory1Title || 'Authorized Signatory', sigX, footerY + 10, { align: 'center' });
 }
 
 export function generateSingleCertificatePDF(

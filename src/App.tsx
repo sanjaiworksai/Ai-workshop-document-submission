@@ -45,10 +45,10 @@ export default function App() {
 
   // Organization & Signatories
   const [organizationName, setOrganizationName] = useState('State Administrative & Legal Directorate');
-  const [signatory1Name, setSignatory1Name] = useState('Dr. Rajeshwari Sundaram, IAS');
-  const [signatory1Title, setSignatory1Title] = useState('Principal Reviewing Authority');
-  const [signatory2Name, setSignatory2Name] = useState('Adv. Vikramaditya Verma');
-  const [signatory2Title, setSignatory2Title] = useState('Chief Legal Auditor');
+  const [signatory1Name, setSignatory1Name] = useState('Thiru . Vishu Mahajan I.A.S');
+  const [signatory1Title, setSignatory1Title] = useState('Authorized Signatory');
+  const [signatory2Name, setSignatory2Name] = useState('');
+  const [signatory2Title, setSignatory2Title] = useState('');
 
   // Single Candidate Details
   const [singleParticipant, setSingleParticipant] = useState<Participant>({
@@ -171,27 +171,6 @@ export default function App() {
     loadWorkspaceForUser(session);
   };
 
-  const handleSwitchUser = (targetEmail: string) => {
-    const ws = getUserWorkspace(targetEmail);
-    if (ws) {
-      loadWorkspaceForUser(ws.user);
-    } else {
-      const cleanEmail = normalizeEmail(targetEmail);
-      const rawName = cleanEmail.split('@')[0];
-      const formattedName = rawName
-        .split(/[._-]/)
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-        .join(' ');
-
-      loadWorkspaceForUser({
-        email: cleanEmail,
-        name: formattedName,
-        loginAt: new Date().toISOString(),
-        avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(cleanEmail)}&backgroundColor=0284c7,1e3a8a,047857`,
-      });
-    }
-  };
-
   const handleLogout = () => {
     setActiveUserEmail(null);
     setUser(null);
@@ -222,7 +201,6 @@ export default function App() {
         uploadedCount={uploadedCount}
         totalCount={totalCount}
         onLogout={handleLogout}
-        onSwitchUser={handleSwitchUser}
       />
 
       {/* Main Content Area based on current Step */}

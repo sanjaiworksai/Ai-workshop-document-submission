@@ -77,13 +77,11 @@ export function CertificateHub({
 
     setTimeout(() => {
       downloadSingleCertificate(p, {
-        submissionTitle: 'Official AI-Workshop Completion & Certification',
+        submissionTitle: 'Official Certificate of Completion',
         theme,
         organization: organizationName,
-        signatory1Name,
-        signatory1Title,
-        signatory2Name,
-        signatory2Title,
+        signatory1Name: signatory1Name || 'Thiru . Vishu Mahajan I.A.S',
+        signatory1Title: signatory1Title || 'Authorized Signatory',
         documents,
       });
 
@@ -99,13 +97,11 @@ export function CertificateHub({
 
     setTimeout(() => {
       downloadGroupCertificatesBundle(groupParticipants, {
-        submissionTitle: 'Official AI-Workshop Completion & Certification',
+        submissionTitle: 'Official Certificate of Completion',
         theme,
         organization: organizationName,
-        signatory1Name,
-        signatory1Title,
-        signatory2Name,
-        signatory2Title,
+        signatory1Name: signatory1Name || 'Thiru . Vishu Mahajan I.A.S',
+        signatory1Title: signatory1Title || 'Authorized Signatory',
         documents,
       });
 
@@ -271,11 +267,11 @@ export function CertificateHub({
                 </p>
 
                 <h2 className="text-2xl sm:text-4xl font-bold font-serif tracking-tight text-slate-900 mt-2">
-                  AI-Workshop Certificate of Completion
+                  Certificate of Completion
                 </h2>
 
                 <p className="text-xs uppercase tracking-widest text-slate-500 font-mono mt-1">
-                  AI-Workshop Submission Portal • Official Certification
+                  Official Completion & Verification Certificate
                 </p>
 
                 <div className="w-24 h-0.5 bg-amber-500 mx-auto my-4" />
@@ -296,8 +292,8 @@ export function CertificateHub({
                 </p>
 
                 <p className="text-xs text-slate-600 max-w-xl mx-auto leading-relaxed pt-2">
-                  has successfully submitted, fulfilled, and completed all 9 core workshop
-                  modules on the AI-Workshop Submission Portal with verified proficiency.
+                  has successfully submitted, fulfilled, and completed all 9 core statutory and technical
+                  modules with verified compliance and proficiency.
                 </p>
 
                 {/* 9 Headings Compact Grid in Certificate */}
@@ -315,20 +311,25 @@ export function CertificateHub({
                 </div>
               </div>
 
-              {/* Bottom Signatories & Verification Seal */}
+              {/* Bottom Signatory & Verification Seal */}
               <div className="pt-6 border-t border-slate-200 relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-                {/* Signatory 1 */}
-                <div className="text-center sm:text-left">
-                  <div className="font-serif italic text-base text-slate-800 mb-1 border-b border-slate-300 pb-1 inline-block">
-                    {signatory1Name}
-                  </div>
-                  <p className="text-xs font-bold text-slate-900">{signatory1Name}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-wider">
-                    {signatory1Title}
-                  </p>
+                {/* Left: Certificate Identification Info */}
+                <div className="text-center sm:text-left space-y-1">
+                  <span className="text-[9px] font-mono uppercase tracking-widest text-slate-500 font-bold block">
+                    Certificate ID
+                  </span>
+                  <span className="text-xs font-mono font-bold text-slate-900 block">
+                    {activeParticipant.certificateNumber}
+                  </span>
+                  <span className="text-[10px] text-slate-500 block">
+                    Issue Date: {activeParticipant.issueDate}
+                  </span>
+                  <span className="text-[9px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 inline-block font-semibold">
+                    ✓ Verified & Digitally Endorsed
+                  </span>
                 </div>
 
-                {/* Center Verification Seal & Serial Number */}
+                {/* Center Verification Seal */}
                 <div className="text-center flex flex-col items-center">
                   <div
                     className={`w-12 h-12 rounded-full ${themeStyles.sealBg} text-white flex items-center justify-center shadow-md mb-1`}
@@ -338,22 +339,21 @@ export function CertificateHub({
                   <span className="text-[9px] font-mono uppercase tracking-widest text-slate-600 font-bold">
                     Official Seal
                   </span>
-                  <span className="text-[10px] font-mono font-semibold text-slate-800 mt-0.5">
-                    {activeParticipant.certificateNumber}
-                  </span>
                   <span className="text-[9px] text-slate-500">
-                    Date: {activeParticipant.issueDate}
+                    Authenticated Record
                   </span>
                 </div>
 
-                {/* Signatory 2 */}
+                {/* Right: Sole Authorized Signatory */}
                 <div className="text-center sm:text-right">
-                  <div className="font-serif italic text-base text-slate-800 mb-1 border-b border-slate-300 pb-1 inline-block">
-                    {signatory2Name}
+                  <div className="font-serif italic text-base text-slate-800 mb-1 border-b border-slate-300 pb-1 inline-block min-w-40 text-center">
+                    {signatory1Name || 'Thiru . Vishu Mahajan I.A.S'}
                   </div>
-                  <p className="text-xs font-bold text-slate-900">{signatory2Name}</p>
+                  <p className="text-xs font-bold text-slate-900">
+                    {signatory1Name || 'Thiru . Vishu Mahajan I.A.S'}
+                  </p>
                   <p className="text-[10px] text-slate-500 uppercase tracking-wider">
-                    {signatory2Title}
+                    {signatory1Title || 'Authorized Signatory'}
                   </p>
                 </div>
               </div>
