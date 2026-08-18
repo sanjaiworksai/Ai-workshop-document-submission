@@ -103,7 +103,7 @@ function drawCertificatePage(
   });
 
   // 4. Header & Organization
-  const orgName = options.organization || participant.organization || 'STATE ADMINISTRATIVE & LEGAL COMPLIANCE DIRECTORATE';
+  const orgName = options.organization || participant.organization || 'AI WORKSHOP PROGRAM';
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
@@ -339,7 +339,7 @@ function drawGroupMasterRosterPage(
   doc.roundedRect(15, 15, width - 30, height - 30, 2, 2, 'D');
 
   // Header
-  const orgName = options.organization || 'STATE ADMINISTRATIVE & LEGAL DIRECTORATE';
+  const orgName = options.organization || 'AI WORKSHOP PROGRAM';
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);

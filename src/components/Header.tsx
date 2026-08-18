@@ -50,7 +50,7 @@ export function Header({
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 truncate max-w-xs sm:max-w-md">
-                {user.organization || 'Administrative & Legal Compliance Directorate'}
+                {user.organization || 'AI Workshop Program'}
               </p>
             </div>
           </div>

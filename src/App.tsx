@@ -44,7 +44,7 @@ export default function App() {
   const [theme, setTheme] = useState<CertificateTheme>('gold');
 
   // Organization & Signatories
-  const [organizationName, setOrganizationName] = useState('State Administrative & Legal Directorate');
+  const [organizationName, setOrganizationName] = useState('AI Workshop Program');
   const [signatory1Name, setSignatory1Name] = useState('Thiru . Vishu Mahajan I.A.S');
   const [signatory1Title, setSignatory1Title] = useState('Authorized Signatory');
   const [signatory2Name, setSignatory2Name] = useState('');
@@ -57,7 +57,7 @@ export default function App() {
     email: '',
     designation: 'Officer / Participant',
     department: 'Technical & Administrative Wing',
-    organization: 'Directorate of Technical Compliance',
+    organization: 'AI Workshop Program',
     certificateNumber: `CERT-2026-${Math.floor(10000 + Math.random() * 90000)}`,
     issueDate: new Date().toLocaleDateString('en-US', {
       year: 'numeric',
@@ -84,18 +84,47 @@ export default function App() {
     let ws = getUserWorkspace(session.email);
     if (!ws) {
       ws = createNewWorkspaceForUser(session);
-      saveUserWorkspace(ws);
+    } else {
+      // Whenever user logs in, ensure the newly provided email & name are immediately reflected
+      if (session.name && session.name.trim()) {
+        ws.user = {
+          ...ws.user,
+          email: session.email,
+          name: session.name,
+          loginAt: session.loginAt || new Date().toISOString(),
+          avatar: session.avatar || ws.user.avatar,
+        };
+        ws.singleParticipant = {
+          ...ws.singleParticipant,
+          fullName: session.name,
+          email: session.email,
+        };
+        if (ws.groupParticipants && ws.groupParticipants.length > 0) {
+          ws.groupParticipants[0] = {
+            ...ws.groupParticipants[0],
+            fullName: session.name,
+            email: session.email,
+          };
+        }
+      }
+      // Migrate legacy organization names
+      if (!ws.organizationName || ws.organizationName.includes('Directorate') || ws.organizationName.includes('State Administrative')) {
+        ws.organizationName = 'AI Workshop Program';
+        ws.singleParticipant.organization = 'AI Workshop Program';
+      }
     }
+
+    saveUserWorkspace(ws);
 
     setUser(ws.user);
     setDocuments(ws.documents);
     setMode(ws.mode);
     setTheme(ws.theme);
-    setOrganizationName(ws.organizationName);
-    setSignatory1Name(ws.signatory1Name);
-    setSignatory1Title(ws.signatory1Title);
-    setSignatory2Name(ws.signatory2Name);
-    setSignatory2Title(ws.signatory2Title);
+    setOrganizationName(ws.organizationName || 'AI Workshop Program');
+    setSignatory1Name(ws.signatory1Name || 'Thiru . Vishu Mahajan I.A.S');
+    setSignatory1Title(ws.signatory1Title || 'Authorized Signatory');
+    setSignatory2Name(ws.signatory2Name || '');
+    setSignatory2Title(ws.signatory2Title || '');
     setSingleParticipant(ws.singleParticipant);
     setGroupParticipants(ws.groupParticipants);
     setCurrentStep(ws.currentStep);
@@ -174,6 +203,30 @@ export default function App() {
   const handleLogout = () => {
     setActiveUserEmail(null);
     setUser(null);
+    setDocuments(() => {
+      const initial: Partial<Record<DocumentCategoryId, UploadedDocument | null>> = {};
+      DOCUMENT_CATEGORIES.forEach((cat) => {
+        initial[cat.id] = null;
+      });
+      return initial as Record<DocumentCategoryId, UploadedDocument | null>;
+    });
+    setSingleParticipant({
+      id: 'single-init',
+      fullName: '',
+      email: '',
+      designation: 'Officer / Participant',
+      department: 'Technical & Administrative Wing',
+      organization: 'AI Workshop Program',
+      certificateNumber: `CERT-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+      issueDate: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+      verificationCode: `VERIF-ADM-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+    });
+    setGroupParticipants([]);
+    setCurrentStep('upload');
   };
 
   const handleUpdateDocument = (categoryId: DocumentCategoryId, doc: UploadedDocument | null) => {
