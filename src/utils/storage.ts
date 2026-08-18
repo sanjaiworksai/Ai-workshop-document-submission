@@ -186,28 +186,6 @@ export function createNewWorkspaceForUser(session: UserSession): UserWorkspaceDa
       id: `grp-1-${Date.now()}`,
       certificateNumber: `CERT-${userSerialPrefix}-GRP-001`,
     },
-    {
-      id: `grp-2-${Date.now()}`,
-      fullName: 'Adv. Vikramaditya Verma',
-      email: 'vikram.verma@legal.gov.in',
-      designation: 'Senior Standing Counsel',
-      department: 'Judicial Compliance Wing',
-      organization: 'Directorate of Technical Compliance',
-      certificateNumber: `CERT-${userSerialPrefix}-GRP-002`,
-      issueDate,
-      verificationCode: `VERIF-GRP-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
-    },
-    {
-      id: `grp-3-${Date.now()}`,
-      fullName: 'Dr. Rajeshwari Sundaram',
-      email: 'rajeshwari.s@admin.gov.in',
-      designation: 'Chief Field Audit Director',
-      department: 'Quality Assurance & Monitoring',
-      organization: 'Directorate of Technical Compliance',
-      certificateNumber: `CERT-${userSerialPrefix}-GRP-003`,
-      issueDate,
-      verificationCode: `VERIF-GRP-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
-    },
   ];
 
   return {

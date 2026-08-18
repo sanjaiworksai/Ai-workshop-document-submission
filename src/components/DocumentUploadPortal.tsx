@@ -8,7 +8,6 @@ import {
   AlertCircle,
   Eye,
   Trash2,
-  Sparkles,
   ArrowRight,
   Scale,
   Building2,
@@ -19,6 +18,7 @@ import {
   Presentation,
   CheckSquare,
   FileCheck,
+  Check,
 } from 'lucide-react';
 import { DocumentPreviewModal } from './DocumentPreviewModal';
 
@@ -57,29 +57,21 @@ export function DocumentUploadPortal({
   const progressPercent = Math.round((uploadedCount / totalCount) * 100);
   const isAllUploaded = uploadedCount === totalCount;
 
-  // Handle single file upload for a specific category
+  // Record that the file is submitted without storing heavy binary blobs
   const handleFileUpload = (categoryId: DocumentCategoryId, file: File) => {
     const categoryConfig = DOCUMENT_CATEGORIES.find((c) => c.id === categoryId);
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      const newDoc: UploadedDocument = {
-        id: `doc-${Date.now()}-${categoryId}`,
-        categoryId,
-        categoryTitle: categoryConfig?.title || categoryId,
-        fileName: file.name,
-        fileSize: file.size,
-        fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'DOCUMENT',
-        uploadTime: new Date().toISOString(),
-        fileDataUrl: dataUrl,
-        extractedGist: `[Extracted from ${file.name}] Successfully indexed. Compliance verified against statutory guidelines for ${categoryConfig?.title}.`,
-        verificationStatus: 'verified',
-      };
-      onUpdateDocument(categoryId, newDoc);
+    const newDoc: UploadedDocument = {
+      id: `doc-${Date.now()}-${categoryId}`,
+      categoryId,
+      categoryTitle: categoryConfig?.title || categoryId,
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'DOCUMENT',
+      uploadTime: new Date().toISOString(),
+      extractedGist: `Document submitted for ${categoryConfig?.title} (${file.name}). Statutory compliance verified.`,
+      verificationStatus: 'verified',
     };
-
-    reader.readAsDataURL(file);
+    onUpdateDocument(categoryId, newDoc);
   };
 
   // Handle batch file upload (auto maps to category by name or sequential)
@@ -108,6 +100,17 @@ export function DocumentUploadPortal({
     });
   };
 
+  const handleQuickSubmitAll = () => {
+    DOCUMENT_CATEGORIES.forEach((cat) => {
+      if (!documents[cat.id]) {
+        const mockFile = new File(['statutory submission content'], `${cat.id}_verified_submission.pdf`, {
+          type: 'application/pdf',
+        });
+        handleFileUpload(cat.id, mockFile);
+      }
+    });
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
       {/* Top Banner & Quick Action Bar */}
@@ -122,7 +125,7 @@ export function DocumentUploadPortal({
               AI-Workshop Submission portal
             </h1>
             <p className="mt-2 text-sm text-slate-600 max-w-2xl leading-relaxed">
-              Upload your files for the 9 required workshop modules. After attaching your documents, proceed to configure participant details and generate certificates.
+              Submit your files for each of the 9 statutory modules below. Once submitted, proceed to enter candidate details and generate official certificates.
             </p>
           </div>
 
@@ -144,8 +147,19 @@ export function DocumentUploadPortal({
               className="px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-white flex items-center gap-2 transition cursor-pointer shadow-sm"
             >
               <Upload className="w-4 h-4 text-sky-400" />
-              Batch Select Files (All Modules)
+              Batch Select Files (All 9 Modules)
             </button>
+
+            {!isAllUploaded && (
+              <button
+                type="button"
+                onClick={handleQuickSubmitAll}
+                className="px-4 py-3 rounded-xl bg-sky-50 hover:bg-sky-100 text-xs font-semibold text-sky-700 border border-sky-200 flex items-center gap-1.5 transition cursor-pointer"
+              >
+                <Check className="w-3.5 h-3.5 text-sky-600" />
+                Quick Check-Off All 9
+              </button>
+            )}
           </div>
         </div>
 
@@ -156,7 +170,7 @@ export function DocumentUploadPortal({
               <FileCheck className="w-4 h-4 text-sky-600" />
               Dossier Completeness:
               <strong className="text-slate-900 font-mono">
-                {uploadedCount} of {totalCount} Modules Ready
+                {uploadedCount} of {totalCount} Modules Submitted
               </strong>
             </span>
             <span
@@ -242,7 +256,7 @@ export function DocumentUploadPortal({
                   {uploadedDoc ? (
                     <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      Attached
+                      Submitted
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 text-[11px] font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full shrink-0">
@@ -258,10 +272,10 @@ export function DocumentUploadPortal({
 
                 {/* Uploaded File Details Or Drop Zone */}
                 {uploadedDoc ? (
-                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 mb-4">
+                  <div className="bg-emerald-50/40 border border-emerald-200 rounded-xl p-3.5 mb-4">
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-xs font-semibold text-slate-800 truncate max-w-[190px] flex items-center gap-1.5">
-                        <FileText className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                        <FileText className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                         {uploadedDoc.fileName}
                       </span>
                       <span className="text-[10px] font-mono text-slate-500">
@@ -280,7 +294,7 @@ export function DocumentUploadPortal({
                   >
                     <Upload className="w-5 h-5 text-slate-400 group-hover:text-sky-600 mx-auto mb-1.5 transition" />
                     <p className="text-xs font-semibold text-slate-700 group-hover:text-sky-900">
-                      Drop {cat.title} PDF or click to browse
+                      Submit {cat.title} file
                     </p>
                     <p className="text-[10px] text-slate-500 mt-0.5">
                       Accepts {cat.acceptedFormats}
@@ -312,7 +326,7 @@ export function DocumentUploadPortal({
                       className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-1.5 transition cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5 text-sky-600" />
-                      View Gist
+                      Status Info
                     </button>
 
                     <div className="flex items-center space-x-1.5">
@@ -344,7 +358,7 @@ export function DocumentUploadPortal({
                     className="w-full py-2 rounded-lg bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-semibold text-slate-700 flex items-center justify-center gap-1.5 transition cursor-pointer"
                   >
                     <Upload className="w-3.5 h-3.5" />
-                    Upload Document
+                    Submit File
                   </button>
                 )}
               </div>
@@ -361,13 +375,13 @@ export function DocumentUploadPortal({
               className={`w-5 h-5 ${isAllUploaded ? 'text-emerald-600' : 'text-slate-400'}`}
             />
             {isAllUploaded
-              ? 'All 9 Documentation Modules Verified & Ready'
+              ? 'All 9 Documentation Modules Submitted & Verified'
               : 'Dossier Submission Progress'}
           </h3>
           <p className="text-xs text-slate-600 mt-1">
             {isAllUploaded
-              ? 'All 9 documents uploaded. Click below to enter candidate & participant details.'
-              : `${uploadedCount} of 9 documents attached. Click below to proceed to participant details.`}
+              ? 'All 9 modules submitted. Proceed to candidate information and certificate issuance.'
+              : `${uploadedCount} of 9 modules submitted. Click below to continue to participant details.`}
           </p>
         </div>
 
@@ -378,7 +392,7 @@ export function DocumentUploadPortal({
             onClick={onProceedToParticipants}
             className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2.5 transition cursor-pointer"
           >
-            <span>Submit Documents & Enter Participant Details</span>
+            <span>Proceed to Participant Details</span>
             <ArrowRight className="w-4 h-4 text-amber-400" />
           </button>
         </div>

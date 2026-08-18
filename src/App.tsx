@@ -53,18 +53,18 @@ export default function App() {
   // Single Candidate Details
   const [singleParticipant, setSingleParticipant] = useState<Participant>({
     id: 'single-init',
-    fullName: 'Sanjai Kumar',
-    email: 'sanjaiworksai@gmail.com',
-    designation: 'Senior Administrative Officer',
-    department: 'Legal & Administrative Affairs Wing',
-    organization: 'State Administrative & Legal Directorate',
-    certificateNumber: 'CERT-ADM-2026-88412',
+    fullName: '',
+    email: '',
+    designation: 'Officer / Participant',
+    department: 'Technical & Administrative Wing',
+    organization: 'Directorate of Technical Compliance',
+    certificateNumber: `CERT-2026-${Math.floor(10000 + Math.random() * 90000)}`,
     issueDate: new Date().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     }),
-    verificationCode: 'VERIF-HASH-88A92',
+    verificationCode: `VERIF-ADM-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
   });
 
   // Group Candidates Details
