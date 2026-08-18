@@ -47,6 +47,7 @@ export function DocumentUploadPortal({
 }: DocumentUploadPortalProps) {
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState<UploadedDocument | null>(null);
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const batchFileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -55,6 +56,16 @@ export function DocumentUploadPortal({
   const totalCount = DOCUMENT_CATEGORIES.length;
   const progressPercent = Math.round((uploadedCount / totalCount) * 100);
   const isAllUploaded = uploadedCount === totalCount;
+  const canProceed = uploadedCount > 0;
+
+  const handleProceed = () => {
+    if (!canProceed) {
+      setErrorMessage('Document update required: You must submit at least one workshop module document before moving to the next page and generating certificates.');
+      return;
+    }
+    setErrorMessage('');
+    onProceedToParticipants();
+  };
 
   // Record that the file is submitted without storing heavy binary blobs
   const handleFileUpload = (categoryId: DocumentCategoryId, file: File) => {
@@ -314,21 +325,42 @@ export function DocumentUploadPortal({
         })}
       </div>
 
+      {/* Error Message when trying to proceed without documents */}
+      {errorMessage && (
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm flex items-center gap-3 animate-fade-in shadow-xs">
+          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+          <div className="flex-1">
+            <span className="font-bold">Document Update Required:</span> {errorMessage}
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorMessage('')}
+            className="text-rose-500 hover:text-rose-700 font-bold px-2 py-1"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Bottom Completion Action Footer */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h3 className="text-base font-bold text-slate-900 font-serif flex items-center gap-2">
             <CheckCircle2
-              className={`w-5 h-5 ${isAllUploaded ? 'text-emerald-600' : 'text-slate-400'}`}
+              className={`w-5 h-5 ${canProceed ? 'text-emerald-600' : 'text-slate-400'}`}
             />
             {isAllUploaded
               ? 'All 9 Workshop Modules Submitted & Ready'
-              : 'AI-Workshop Module Submissions'}
+              : canProceed
+              ? 'Workshop Modules Submitted'
+              : 'Workshop Module Submissions (Required)'}
           </h3>
           <p className="text-xs text-slate-600 mt-1">
             {isAllUploaded
               ? 'All 9 modules submitted. Proceed to candidate information and certificate issuance.'
-              : `${uploadedCount} of 9 workshop modules submitted. Click below to continue to participant details.`}
+              : canProceed
+              ? `${uploadedCount} of 9 workshop modules submitted. You can now continue to participant details.`
+              : 'Please submit workshop documents for your modules before moving to candidate details and certificate issuance.'}
           </p>
         </div>
 
@@ -336,11 +368,17 @@ export function DocumentUploadPortal({
           <button
             type="button"
             id="proceed-to-participants-btn"
-            onClick={onProceedToParticipants}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2.5 transition cursor-pointer"
+            onClick={handleProceed}
+            disabled={!canProceed}
+            className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition ${
+              canProceed
+                ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 cursor-pointer'
+                : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+            }`}
+            title={canProceed ? 'Proceed to candidate details' : 'Upload module documents first to proceed'}
           >
             <span>Proceed to Participant Details</span>
-            <ArrowRight className="w-4 h-4 text-amber-400" />
+            <ArrowRight className={`w-4 h-4 ${canProceed ? 'text-amber-400' : 'text-slate-400'}`} />
           </button>
         </div>
       </div>

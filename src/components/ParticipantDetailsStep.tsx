@@ -18,6 +18,7 @@ import {
   Calendar,
   Hash,
   Check,
+  AlertCircle,
 } from 'lucide-react';
 
 interface ParticipantDetailsStepProps {
@@ -173,6 +174,29 @@ export function ParticipantDetailsStep({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
+      {/* Warning Banner if No Documents Uploaded */}
+      {uploadedCount === 0 && (
+        <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-fade-in">
+          <div className="flex items-start sm:items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
+            <div>
+              <p className="font-bold text-sm">No Workshop Documents Submitted</p>
+              <p className="text-xs text-amber-700 mt-0.5">
+                Statutory certificate generation requires uploading workshop module documents. Please return to Step 1 to submit your documents.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onBackToUpload}
+            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shrink-0 cursor-pointer shadow-xs"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Go to Document Upload</span>
+          </button>
+        </div>
+      )}
+
       {/* Top Banner */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-6 sm:p-8 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -569,10 +593,16 @@ export function ParticipantDetailsStep({
             type="button"
             id="proceed-to-download-btn"
             onClick={onProceedToDownload}
-            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2.5 transition cursor-pointer"
+            disabled={uploadedCount === 0}
+            className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition ${
+              uploadedCount > 0
+                ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 cursor-pointer'
+                : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
+            }`}
+            title={uploadedCount > 0 ? 'Generate official certificates' : 'Upload module documents in Step 1 first'}
           >
             <span>Generate & Proceed to Certificate Download</span>
-            <ArrowRight className="w-4 h-4 text-amber-400" />
+            <ArrowRight className={`w-4 h-4 ${uploadedCount > 0 ? 'text-amber-400' : 'text-slate-400'}`} />
           </button>
         </div>
       </div>

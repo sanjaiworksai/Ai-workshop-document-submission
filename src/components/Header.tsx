@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   ChevronDown,
   UserPlus,
+  Lock,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -70,26 +71,50 @@ export function Header({
             </button>
 
             <button
-              onClick={() => onStepChange('participants')}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition cursor-pointer ${
-                currentStep === 'participants'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
+              onClick={() => {
+                if (uploadedCount > 0) {
+                  onStepChange('participants');
+                }
+              }}
+              disabled={uploadedCount === 0}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition ${
+                uploadedCount === 0
+                  ? 'text-slate-400 cursor-not-allowed opacity-60'
+                  : currentStep === 'participants'
+                  ? 'bg-white text-slate-900 shadow-xs font-semibold cursor-pointer'
+                  : 'text-slate-600 hover:text-slate-900 cursor-pointer'
               }`}
+              title={uploadedCount === 0 ? 'Upload documents first to unlock' : 'Go to Participant Details'}
             >
-              <Users className="w-3.5 h-3.5 text-sky-600" />
+              {uploadedCount === 0 ? (
+                <Lock className="w-3 h-3 text-slate-400" />
+              ) : (
+                <Users className="w-3.5 h-3.5 text-sky-600" />
+              )}
               <span>2. Participant Details</span>
             </button>
 
             <button
-              onClick={() => onStepChange('certificate')}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition cursor-pointer ${
-                currentStep === 'certificate'
-                  ? 'bg-slate-900 text-white shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
+              onClick={() => {
+                if (uploadedCount > 0) {
+                  onStepChange('certificate');
+                }
+              }}
+              disabled={uploadedCount === 0}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition ${
+                uploadedCount === 0
+                  ? 'text-slate-400 cursor-not-allowed opacity-60'
+                  : currentStep === 'certificate'
+                  ? 'bg-slate-900 text-white shadow-xs font-semibold cursor-pointer'
+                  : 'text-slate-600 hover:text-slate-900 cursor-pointer'
               }`}
+              title={uploadedCount === 0 ? 'Upload documents first to unlock' : 'Go to Certificate Download'}
             >
-              <Download className="w-3.5 h-3.5 text-amber-400" />
+              {uploadedCount === 0 ? (
+                <Lock className="w-3 h-3 text-slate-400" />
+              ) : (
+                <Download className="w-3.5 h-3.5 text-amber-400" />
+              )}
               <span>3. Certificate Download</span>
             </button>
           </div>

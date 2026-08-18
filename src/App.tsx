@@ -244,13 +244,21 @@ export default function App() {
   const uploadedCount = Object.values(documents).filter(Boolean).length;
   const totalCount = DOCUMENT_CATEGORIES.length;
 
+  const handleStepChange = (nextStep: 'upload' | 'participants' | 'certificate') => {
+    if ((nextStep === 'participants' || nextStep === 'certificate') && uploadedCount === 0) {
+      setCurrentStep('upload');
+      return;
+    }
+    setCurrentStep(nextStep);
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col selection:bg-sky-500 selection:text-white">
       {/* Top Header with Multi-User Isolation & Stepper */}
       <Header
         user={user}
         currentStep={currentStep}
-        onStepChange={setCurrentStep}
+        onStepChange={handleStepChange}
         uploadedCount={uploadedCount}
         totalCount={totalCount}
         onLogout={handleLogout}
@@ -263,7 +271,7 @@ export default function App() {
             documents={documents}
             onUpdateDocument={handleUpdateDocument}
             onProceedToParticipants={() => {
-              setCurrentStep('participants');
+              handleStepChange('participants');
             }}
           />
         )}
@@ -295,7 +303,7 @@ export default function App() {
             organizationName={organizationName}
             onOrganizationNameChange={setOrganizationName}
             onBackToUpload={() => setCurrentStep('upload')}
-            onProceedToDownload={() => setCurrentStep('certificate')}
+            onProceedToDownload={() => handleStepChange('certificate')}
           />
         )}
 
