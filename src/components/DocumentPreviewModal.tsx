@@ -1,5 +1,6 @@
 import { UploadedDocument } from '../types';
-import { X, FileText, CheckCircle2, Download, Calendar, HardDrive, Shield } from 'lucide-react';
+import { DOCUMENT_CATEGORIES } from '../data/categories';
+import { X, FileText, CheckCircle2, Download, Calendar, HardDrive, Shield, ExternalLink } from 'lucide-react';
 
 interface DocumentPreviewModalProps {
   document: UploadedDocument | null;
@@ -8,6 +9,8 @@ interface DocumentPreviewModalProps {
 
 export function DocumentPreviewModal({ document, onClose }: DocumentPreviewModalProps) {
   if (!document) return null;
+
+  const categoryConfig = DOCUMENT_CATEGORIES.find((c) => c.id === document.categoryId);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
@@ -102,6 +105,19 @@ export function DocumentPreviewModal({ document, onClose }: DocumentPreviewModal
           >
             Close Preview
           </button>
+          {categoryConfig?.referenceUrl && (
+            <a
+              href={categoryConfig.referenceDownloadUrl || categoryConfig.referenceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={`${categoryConfig.code}_${categoryConfig.title.replace(/\s+/g, '_')}.pdf`}
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-xs"
+              title="Download Google Drive source document as PDF"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download Source PDF</span>
+            </a>
+          )}
           {document.fileDataUrl && (
             <a
               href={document.fileDataUrl}

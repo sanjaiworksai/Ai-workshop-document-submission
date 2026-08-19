@@ -28,6 +28,8 @@ export interface DocumentCategoryConfig {
   badgeColor: string;
   acceptedFormats: string;
   sampleSummary: string;
+  referenceUrl?: string;
+  referenceDownloadUrl?: string;
 }
 
 export interface UploadedDocument {

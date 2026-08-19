@@ -10,6 +10,8 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
     acceptedFormats: '.pdf, .docx, .doc, .txt',
     sampleSummary: 'WP(C) No. 4892/2025: Directive regarding statutory compliance within 45 days. Legal analysis confirmed all 4 key compliance caveats addressed.',
+    referenceUrl: 'https://drive.google.com/file/d/1t5LX_ryY4p46OkoSVltroUGQnskF74UD/view?usp=sharing',
+    referenceDownloadUrl: 'https://drive.google.com/uc?export=download&id=1t5LX_ryY4p46OkoSVltroUGQnskF74UD',
   },
   {
     id: 'go_summary',
