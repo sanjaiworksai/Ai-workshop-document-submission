@@ -102,25 +102,6 @@ export function DocumentUploadPortal({
     }
   };
 
-  // Quick load all 9 sample statutory workshop documents
-  const handleQuickLoadAll9 = () => {
-    DOCUMENT_CATEGORIES.forEach((cat, index) => {
-      const sampleDoc: UploadedDocument = {
-        id: `doc-sample-${Date.now()}-${cat.id}-${index}`,
-        categoryId: cat.id,
-        categoryTitle: cat.title,
-        fileName: `${cat.code}_${cat.id.toUpperCase()}_Verified.pdf`,
-        fileSize: 1024 * (120 + index * 45),
-        fileType: 'PDF',
-        uploadTime: new Date().toISOString(),
-        extractedGist: `Statutory verification verified for ${cat.title}. Meets all departmental curriculum compliance criteria.`,
-        verificationStatus: 'verified',
-      };
-      onUpdateDocument(cat.id, sampleDoc);
-    });
-    triggerAutoAdvance();
-  };
-
   // Handle batch file upload (auto maps to category by name or sequential)
   const handleBatchFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -197,23 +178,12 @@ export function DocumentUploadPortal({
 
             <button
               type="button"
-              id="quick-load-9-btn"
-              onClick={handleQuickLoadAll9}
-              className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold flex items-center gap-2 transition cursor-pointer shadow-sm"
-              title="Instantly submit all 9 workshop modules and advance"
-            >
-              <CheckSquare className="w-4 h-4 text-slate-950" />
-              Auto-Fill All 9 Statutory Documents
-            </button>
-
-            <button
-              type="button"
               id="batch-upload-btn"
               onClick={() => batchFileInputRef.current?.click()}
-              className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-white flex items-center gap-2 transition cursor-pointer shadow-sm"
+              className="px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-white flex items-center gap-2 transition cursor-pointer shadow-sm"
             >
               <Upload className="w-4 h-4 text-sky-400" />
-              Batch Select Files
+              Batch Select Files (All 9 Modules)
             </button>
           </div>
         </div>
