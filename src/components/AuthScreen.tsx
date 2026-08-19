@@ -6,7 +6,6 @@ import {
   Mail,
   ArrowRight,
   Lock,
-  CheckCircle2,
   Award,
   User,
 } from 'lucide-react';
@@ -185,28 +184,9 @@ export function AuthScreen({ onLogin, defaultEmail = '' }: AuthScreenProps) {
               <Lock className="w-3 h-3 text-slate-400" />
               Direct User Login
             </span>
-            <span className="flex items-center gap-1 text-slate-600 font-medium">
-              9 Mandatory Workshop Modules
+            <span className="flex items-center gap-1 text-slate-500 font-medium">
+              Secure Certificate Portal
             </span>
-          </div>
-        </div>
-
-        {/* 9 Headings preview box */}
-        <div className="p-4 bg-white/80 rounded-2xl border border-slate-200 shadow-xs text-xs text-slate-600">
-          <p className="font-semibold text-slate-800 mb-1.5 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-sky-600" />
-            9 Required Statutory Modules:
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-[11px] text-slate-600 pt-1">
-            <span>• Court Order Gist</span>
-            <span>• G.O. Summary</span>
-            <span>• Translation</span>
-            <span>• Inspection Report</span>
-            <span>• Letter Drafting</span>
-            <span>• Action Point Extraction</span>
-            <span>• Review Data Analysis</span>
-            <span>• PPT Creation Template</span>
-            <span>• Inspection Checklist</span>
           </div>
         </div>
       </div>
