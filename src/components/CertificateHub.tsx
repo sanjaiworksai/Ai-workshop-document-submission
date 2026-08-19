@@ -63,6 +63,7 @@ export function CertificateHub({
       : groupParticipants[selectedGroupPreviewIndex] || groupParticipants[0] || singleParticipant;
 
   const uploadedCount = Object.values(documents).filter(Boolean).length;
+  const totalCount = DOCUMENT_CATEGORIES.length;
 
   const triggerCelebration = () => {
     confetti({
@@ -73,8 +74,8 @@ export function CertificateHub({
   };
 
   const handleDownloadSingle = (p: Participant) => {
-    if (uploadedCount === 0) {
-      alert('Cannot generate or download certificate: You must upload workshop module documents first in Step 1.');
+    if (uploadedCount < totalCount) {
+      alert(`Cannot generate or download certificate: All 9 statutory workshop module documents must be submitted first (currently ${uploadedCount}/${totalCount}).`);
       return;
     }
 
@@ -98,8 +99,8 @@ export function CertificateHub({
   };
 
   const handleDownloadGroupBundle = () => {
-    if (uploadedCount === 0) {
-      alert('Cannot generate or download certificates: You must upload workshop module documents first in Step 1.');
+    if (uploadedCount < totalCount) {
+      alert(`Cannot generate or download certificates: All 9 statutory workshop module documents must be submitted first (currently ${uploadedCount}/${totalCount}).`);
       return;
     }
 
@@ -162,15 +163,15 @@ export function CertificateHub({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
-      {/* Warning Banner if No Documents Uploaded */}
-      {uploadedCount === 0 && (
+      {/* Warning Banner if Not All 9 Documents Uploaded */}
+      {uploadedCount < totalCount && (
         <div className="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-fade-in">
           <div className="flex items-start sm:items-center gap-3">
             <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5 sm:mt-0" />
             <div>
-              <p className="font-bold text-sm">Document Submission Required</p>
+              <p className="font-bold text-sm">Statutory 9-Document Requirement Incomplete ({uploadedCount}/9)</p>
               <p className="text-xs text-rose-700 mt-0.5">
-                No workshop module documents have been submitted. Official certificates cannot be issued or downloaded without uploaded documents.
+                Official certificates cannot be issued or downloaded until all 9 statutory workshop documents are submitted. Please return to Step 1 to upload the remaining {totalCount - uploadedCount} modules.
               </p>
             </div>
           </div>
@@ -216,15 +217,19 @@ export function CertificateHub({
                 type="button"
                 id="download-individual-pdf-btn"
                 onClick={() => handleDownloadSingle(singleParticipant)}
-                disabled={isGenerating || uploadedCount === 0}
+                disabled={isGenerating || uploadedCount < totalCount}
                 className={`px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition ${
-                  uploadedCount > 0 && !isGenerating
+                  uploadedCount === totalCount && !isGenerating
                     ? 'bg-slate-900 hover:bg-slate-800 text-white cursor-pointer shadow-md'
                     : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                 }`}
-                title={uploadedCount > 0 ? 'Download official certificate' : 'Upload module documents first'}
+                title={
+                  uploadedCount === totalCount
+                    ? 'Download official certificate'
+                    : `Upload all 9 module documents in Step 1 first (${uploadedCount}/${totalCount})`
+                }
               >
-                <Download className={`w-4 h-4 ${uploadedCount > 0 ? 'text-amber-400' : 'text-slate-400'}`} />
+                <Download className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />
                 {isGenerating ? 'Generating PDF...' : 'Download Official PDF Certificate'}
               </button>
             ) : (
@@ -232,15 +237,19 @@ export function CertificateHub({
                 type="button"
                 id="download-group-bundle-btn"
                 onClick={handleDownloadGroupBundle}
-                disabled={isGenerating || uploadedCount === 0}
+                disabled={isGenerating || uploadedCount < totalCount}
                 className={`px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition ${
-                  uploadedCount > 0 && !isGenerating
+                  uploadedCount === totalCount && !isGenerating
                     ? 'bg-slate-900 hover:bg-slate-800 text-white cursor-pointer shadow-md'
                     : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                 }`}
-                title={uploadedCount > 0 ? 'Download all certificates' : 'Upload module documents first'}
+                title={
+                  uploadedCount === totalCount
+                    ? 'Download all certificates'
+                    : `Upload all 9 module documents in Step 1 first (${uploadedCount}/${totalCount})`
+                }
               >
-                <Download className={`w-4 h-4 ${uploadedCount > 0 ? 'text-amber-400' : 'text-slate-400'}`} />
+                <Download className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />
                 {isGenerating
                   ? 'Compiling Bundle...'
                   : `Download All Certificates (${groupParticipants.length} PDFs)`}
@@ -475,12 +484,13 @@ export function CertificateHub({
                     <button
                       type="button"
                       onClick={() => handleDownloadSingle(p)}
-                      disabled={uploadedCount === 0}
+                      disabled={uploadedCount < totalCount}
                       className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition flex items-center gap-1 shrink-0 ${
-                        uploadedCount > 0
+                        uploadedCount === totalCount
                           ? 'bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-700 cursor-pointer'
-                          : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                          : 'bg-slate-100 text-slate-400 cursor-not-allowed opacity-50'
                       }`}
+                      title={uploadedCount === totalCount ? `Download PDF for ${p.fullName}` : 'All 9 documents required'}
                     >
                       <Download className="w-3 h-3" />
                       PDF
@@ -531,30 +541,38 @@ export function CertificateHub({
             <button
               type="button"
               onClick={() => handleDownloadSingle(singleParticipant)}
-              disabled={uploadedCount === 0 || isGenerating}
+              disabled={uploadedCount < totalCount || isGenerating}
               className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition ${
-                uploadedCount > 0 && !isGenerating
+                uploadedCount === totalCount && !isGenerating
                   ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 cursor-pointer'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
               }`}
-              title={uploadedCount > 0 ? 'Download official certificate' : 'Upload module documents first'}
+              title={
+                uploadedCount === totalCount
+                  ? 'Download official certificate'
+                  : `Upload all 9 module documents first (${uploadedCount}/${totalCount})`
+              }
             >
-              <Download className={`w-4 h-4 ${uploadedCount > 0 ? 'text-amber-400' : 'text-slate-400'}`} />
+              <Download className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />
               <span>Download Official PDF Certificate</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={handleDownloadGroupBundle}
-              disabled={uploadedCount === 0 || isGenerating}
+              disabled={uploadedCount < totalCount || isGenerating}
               className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition ${
-                uploadedCount > 0 && !isGenerating
+                uploadedCount === totalCount && !isGenerating
                   ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 cursor-pointer'
                   : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
               }`}
-              title={uploadedCount > 0 ? 'Download all certificates' : 'Upload module documents first'}
+              title={
+                uploadedCount === totalCount
+                  ? 'Download all certificates'
+                  : `Upload all 9 module documents first (${uploadedCount}/${totalCount})`
+              }
             >
-              <Download className={`w-4 h-4 ${uploadedCount > 0 ? 'text-amber-400' : 'text-slate-400'}`} />
+              <Download className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />
               <span>Download All {groupParticipants.length} Certificates</span>
             </button>
           )}

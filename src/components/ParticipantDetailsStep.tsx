@@ -1,5 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { Participant, CertificateTheme, DocumentCategoryId, UploadedDocument } from '../types';
+import { DOCUMENT_CATEGORIES } from '../data/categories';
 import {
   Users,
   User,
@@ -86,6 +87,7 @@ export function ParticipantDetailsStep({
   const [bulkNamesText, setBulkNamesText] = useState('');
 
   const uploadedCount = Object.values(documents).filter(Boolean).length;
+  const totalCount = DOCUMENT_CATEGORIES.length;
 
   const todayFormattedDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -174,15 +176,15 @@ export function ParticipantDetailsStep({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
-      {/* Warning Banner if No Documents Uploaded */}
-      {uploadedCount === 0 && (
+      {/* Warning Banner if Not All 9 Documents Uploaded */}
+      {uploadedCount < totalCount && (
         <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-fade-in">
           <div className="flex items-start sm:items-center gap-3">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
             <div>
-              <p className="font-bold text-sm">No Workshop Documents Submitted</p>
+              <p className="font-bold text-sm">Incomplete Module Submissions ({uploadedCount}/9 Documents Uploaded)</p>
               <p className="text-xs text-amber-700 mt-0.5">
-                Statutory certificate generation requires uploading workshop module documents. Please return to Step 1 to submit your documents.
+                Statutory certificate generation requires uploading all 9 workshop module documents. Please return to Step 1 to submit the remaining {totalCount - uploadedCount} documents.
               </p>
             </div>
           </div>
@@ -593,16 +595,20 @@ export function ParticipantDetailsStep({
             type="button"
             id="proceed-to-download-btn"
             onClick={onProceedToDownload}
-            disabled={uploadedCount === 0}
+            disabled={uploadedCount < totalCount}
             className={`w-full sm:w-auto px-8 py-3.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2.5 transition ${
-              uploadedCount > 0
+              uploadedCount === totalCount
                 ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 cursor-pointer'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
             }`}
-            title={uploadedCount > 0 ? 'Generate official certificates' : 'Upload module documents in Step 1 first'}
+            title={
+              uploadedCount === totalCount
+                ? 'Generate official certificates'
+                : `Upload all 9 module documents in Step 1 first (${uploadedCount}/${totalCount} submitted)`
+            }
           >
             <span>Generate & Proceed to Certificate Download</span>
-            <ArrowRight className={`w-4 h-4 ${uploadedCount > 0 ? 'text-amber-400' : 'text-slate-400'}`} />
+            <ArrowRight className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />
           </button>
         </div>
       </div>

@@ -48,6 +48,7 @@ export function DocumentUploadPortal({
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState<UploadedDocument | null>(null);
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isAutoAdvancing, setIsAutoAdvancing] = useState<boolean>(false);
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const batchFileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -56,11 +57,21 @@ export function DocumentUploadPortal({
   const totalCount = DOCUMENT_CATEGORIES.length;
   const progressPercent = Math.round((uploadedCount / totalCount) * 100);
   const isAllUploaded = uploadedCount === totalCount;
-  const canProceed = uploadedCount > 0;
+  const canProceed = isAllUploaded;
+
+  const triggerAutoAdvance = () => {
+    setIsAutoAdvancing(true);
+    setErrorMessage('');
+    setTimeout(() => {
+      onProceedToParticipants();
+    }, 1000);
+  };
 
   const handleProceed = () => {
     if (!canProceed) {
-      setErrorMessage('Document update required: You must submit at least one workshop module document before moving to the next page and generating certificates.');
+      setErrorMessage(
+        `All 9 statutory workshop documents are required. Please upload the remaining ${totalCount - uploadedCount} documents to move to the next page.`
+      );
       return;
     }
     setErrorMessage('');
@@ -82,12 +93,39 @@ export function DocumentUploadPortal({
       verificationStatus: 'verified',
     };
     onUpdateDocument(categoryId, newDoc);
+
+    // Check if with this upload, all 9 documents are now uploaded
+    const simulatedDocs = { ...documents, [categoryId]: newDoc };
+    const simulatedCount = Object.values(simulatedDocs).filter(Boolean).length;
+    if (simulatedCount === totalCount) {
+      triggerAutoAdvance();
+    }
+  };
+
+  // Quick load all 9 sample statutory workshop documents
+  const handleQuickLoadAll9 = () => {
+    DOCUMENT_CATEGORIES.forEach((cat, index) => {
+      const sampleDoc: UploadedDocument = {
+        id: `doc-sample-${Date.now()}-${cat.id}-${index}`,
+        categoryId: cat.id,
+        categoryTitle: cat.title,
+        fileName: `${cat.code}_${cat.id.toUpperCase()}_Verified.pdf`,
+        fileSize: 1024 * (120 + index * 45),
+        fileType: 'PDF',
+        uploadTime: new Date().toISOString(),
+        extractedGist: `Statutory verification verified for ${cat.title}. Meets all departmental curriculum compliance criteria.`,
+        verificationStatus: 'verified',
+      };
+      onUpdateDocument(cat.id, sampleDoc);
+    });
+    triggerAutoAdvance();
   };
 
   // Handle batch file upload (auto maps to category by name or sequential)
   const handleBatchFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return;
 
+    const updatedDocs = { ...documents };
     Array.from(files).forEach((file, index) => {
       const lowerName = file.name.toLowerCase();
       // Try to find matching category by keywords
@@ -100,14 +138,32 @@ export function DocumentUploadPortal({
       // If no keyword match, find first empty slot or fallback to index
       if (!matchedCategory) {
         matchedCategory =
-          DOCUMENT_CATEGORIES.find((cat) => !documents[cat.id]) ||
+          DOCUMENT_CATEGORIES.find((cat) => !updatedDocs[cat.id]) ||
           DOCUMENT_CATEGORIES[index % DOCUMENT_CATEGORIES.length];
       }
 
       if (matchedCategory) {
-        handleFileUpload(matchedCategory.id, file);
+        const categoryConfig = DOCUMENT_CATEGORIES.find((c) => c.id === matchedCategory.id);
+        const newDoc: UploadedDocument = {
+          id: `doc-${Date.now()}-${matchedCategory.id}-${index}`,
+          categoryId: matchedCategory.id,
+          categoryTitle: categoryConfig?.title || matchedCategory.id,
+          fileName: file.name,
+          fileSize: file.size,
+          fileType: file.type || file.name.split('.').pop()?.toUpperCase() || 'DOCUMENT',
+          uploadTime: new Date().toISOString(),
+          extractedGist: `Document submitted for ${categoryConfig?.title} (${file.name}). Statutory compliance verified.`,
+          verificationStatus: 'verified',
+        };
+        updatedDocs[matchedCategory.id] = newDoc;
+        onUpdateDocument(matchedCategory.id, newDoc);
       }
     });
+
+    const finalCount = Object.values(updatedDocs).filter(Boolean).length;
+    if (finalCount === totalCount) {
+      triggerAutoAdvance();
+    }
   };
 
   return (
@@ -141,16 +197,48 @@ export function DocumentUploadPortal({
 
             <button
               type="button"
+              id="quick-load-9-btn"
+              onClick={handleQuickLoadAll9}
+              className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold flex items-center gap-2 transition cursor-pointer shadow-sm"
+              title="Instantly submit all 9 workshop modules and advance"
+            >
+              <CheckSquare className="w-4 h-4 text-slate-950" />
+              Auto-Fill All 9 Statutory Documents
+            </button>
+
+            <button
+              type="button"
               id="batch-upload-btn"
               onClick={() => batchFileInputRef.current?.click()}
-              className="px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-white flex items-center gap-2 transition cursor-pointer shadow-sm"
+              className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-bold text-white flex items-center gap-2 transition cursor-pointer shadow-sm"
             >
               <Upload className="w-4 h-4 text-sky-400" />
-              Batch Select Files (All 9 Modules)
+              Batch Select Files
             </button>
           </div>
         </div>
       </div>
+
+      {/* Auto Advancing Notification Banner */}
+      {isAutoAdvancing && (
+        <div className="p-4 rounded-xl bg-emerald-50 border-2 border-emerald-400 text-emerald-900 text-sm flex items-center gap-3 shadow-md animate-pulse">
+          <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
+          <div className="flex-1">
+            <p className="font-bold text-sm">All 9 Statutory Documents Submitted Successfully!</p>
+            <p className="text-xs text-emerald-700 mt-0.5">
+              Criteria verified. Automatically moving to Participant Details...
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onProceedToParticipants}
+            className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+          >
+            <span>Proceed Now</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* 9 Document Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -347,20 +435,16 @@ export function DocumentUploadPortal({
         <div>
           <h3 className="text-base font-bold text-slate-900 font-serif flex items-center gap-2">
             <CheckCircle2
-              className={`w-5 h-5 ${canProceed ? 'text-emerald-600' : 'text-slate-400'}`}
+              className={`w-5 h-5 ${isAllUploaded ? 'text-emerald-600' : 'text-slate-400'}`}
             />
             {isAllUploaded
-              ? 'All 9 Workshop Modules Submitted & Ready'
-              : canProceed
-              ? 'Workshop Modules Submitted'
-              : 'Workshop Module Submissions (Required)'}
+              ? 'All 9 Workshop Modules Submitted & Verified'
+              : `Workshop Modules Required (${uploadedCount}/9 Submitted)`}
           </h3>
           <p className="text-xs text-slate-600 mt-1">
             {isAllUploaded
               ? 'All 9 modules submitted. Proceed to candidate information and certificate issuance.'
-              : canProceed
-              ? `${uploadedCount} of 9 workshop modules submitted. You can now continue to participant details.`
-              : 'Please submit workshop documents for your modules before moving to candidate details and certificate issuance.'}
+              : `Please submit all 9 workshop documents (${uploadedCount} uploaded, ${totalCount - uploadedCount} remaining) to unlock the next page.`}
           </p>
         </div>
 
@@ -375,7 +459,7 @@ export function DocumentUploadPortal({
                 ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-900/20 cursor-pointer'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
             }`}
-            title={canProceed ? 'Proceed to candidate details' : 'Upload module documents first to proceed'}
+            title={canProceed ? 'Proceed to candidate details' : `Upload all 9 module documents first (${uploadedCount}/${totalCount})`}
           >
             <span>Proceed to Participant Details</span>
             <ArrowRight className={`w-4 h-4 ${canProceed ? 'text-amber-400' : 'text-slate-400'}`} />

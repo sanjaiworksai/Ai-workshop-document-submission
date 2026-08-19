@@ -245,7 +245,7 @@ export default function App() {
   const totalCount = DOCUMENT_CATEGORIES.length;
 
   const handleStepChange = (nextStep: 'upload' | 'participants' | 'certificate') => {
-    if ((nextStep === 'participants' || nextStep === 'certificate') && uploadedCount === 0) {
+    if ((nextStep === 'participants' || nextStep === 'certificate') && uploadedCount < totalCount) {
       setCurrentStep('upload');
       return;
     }

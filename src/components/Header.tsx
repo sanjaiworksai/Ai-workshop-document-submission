@@ -72,21 +72,25 @@ export function Header({
 
             <button
               onClick={() => {
-                if (uploadedCount > 0) {
+                if (uploadedCount === totalCount) {
                   onStepChange('participants');
                 }
               }}
-              disabled={uploadedCount === 0}
+              disabled={uploadedCount < totalCount}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition ${
-                uploadedCount === 0
+                uploadedCount < totalCount
                   ? 'text-slate-400 cursor-not-allowed opacity-60'
                   : currentStep === 'participants'
                   ? 'bg-white text-slate-900 shadow-xs font-semibold cursor-pointer'
                   : 'text-slate-600 hover:text-slate-900 cursor-pointer'
               }`}
-              title={uploadedCount === 0 ? 'Upload documents first to unlock' : 'Go to Participant Details'}
+              title={
+                uploadedCount < totalCount
+                  ? `Upload all 9 statutory documents to unlock (${uploadedCount}/${totalCount} submitted)`
+                  : 'Go to Participant Details'
+              }
             >
-              {uploadedCount === 0 ? (
+              {uploadedCount < totalCount ? (
                 <Lock className="w-3 h-3 text-slate-400" />
               ) : (
                 <Users className="w-3.5 h-3.5 text-sky-600" />
@@ -96,21 +100,25 @@ export function Header({
 
             <button
               onClick={() => {
-                if (uploadedCount > 0) {
+                if (uploadedCount === totalCount) {
                   onStepChange('certificate');
                 }
               }}
-              disabled={uploadedCount === 0}
+              disabled={uploadedCount < totalCount}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium transition ${
-                uploadedCount === 0
+                uploadedCount < totalCount
                   ? 'text-slate-400 cursor-not-allowed opacity-60'
                   : currentStep === 'certificate'
                   ? 'bg-slate-900 text-white shadow-xs font-semibold cursor-pointer'
                   : 'text-slate-600 hover:text-slate-900 cursor-pointer'
               }`}
-              title={uploadedCount === 0 ? 'Upload documents first to unlock' : 'Go to Certificate Download'}
+              title={
+                uploadedCount < totalCount
+                  ? `Upload all 9 statutory documents to unlock (${uploadedCount}/${totalCount} submitted)`
+                  : 'Go to Certificate Download'
+              }
             >
-              {uploadedCount === 0 ? (
+              {uploadedCount < totalCount ? (
                 <Lock className="w-3 h-3 text-slate-400" />
               ) : (
                 <Download className="w-3.5 h-3.5 text-amber-400" />
