@@ -30,6 +30,7 @@ export interface DocumentCategoryConfig {
   sampleSummary: string;
   referenceUrl?: string;
   referenceDownloadUrl?: string;
+  referenceFormat?: 'pdf' | 'xlsx' | 'docx' | 'csv';
 }
 
 export interface UploadedDocument {

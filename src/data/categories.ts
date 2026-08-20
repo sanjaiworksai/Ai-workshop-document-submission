@@ -22,6 +22,9 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
     acceptedFormats: '.pdf, .docx, .doc, .txt',
     sampleSummary: 'G.O. Ms. No. 114/REV/2026: Administrative sanction for modernized regulatory portal and procedural standardizations.',
+    referenceUrl: 'https://drive.google.com/file/d/1-GYoa85exJHtuM5DoDmZKH22DKrWxQSW/view?usp=sharing',
+    referenceDownloadUrl: 'https://drive.google.com/uc?export=download&id=1-GYoa85exJHtuM5DoDmZKH22DKrWxQSW',
+    referenceFormat: 'pdf',
   },
   {
     id: 'translation',
@@ -42,6 +45,9 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
     acceptedFormats: '.pdf, .docx, .doc, .txt',
     sampleSummary: 'Field Inspection of District Zone-4: 100% boundary survey complete, structural integrity scored 94/100, zero critical deviations.',
+    referenceUrl: 'https://docs.google.com/document/d/1NWgc4yzatlGplj10XB4uIEp1wzqqRo7f/edit?usp=sharing&ouid=104608524895326677161&rtpof=true&sd=true',
+    referenceDownloadUrl: 'https://docs.google.com/document/d/1NWgc4yzatlGplj10XB4uIEp1wzqqRo7f/export?format=pdf',
+    referenceFormat: 'pdf',
   },
   {
     id: 'letter_drafting',
@@ -72,6 +78,9 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     badgeColor: 'bg-cyan-100 text-cyan-800 border-cyan-300',
     acceptedFormats: '.pdf, .xlsx, .csv, .docx',
     sampleSummary: 'Data Review: 98.4% case resolution rate, average turnaround reduced from 14 days to 3.2 days, variance within ±1.5%.',
+    referenceUrl: 'https://docs.google.com/spreadsheets/d/1MpelLus0ahbEMq0SCipLEye5eMsYZc60vnc3g6uV-bE/edit?usp=sharing',
+    referenceDownloadUrl: 'https://docs.google.com/spreadsheets/d/1MpelLus0ahbEMq0SCipLEye5eMsYZc60vnc3g6uV-bE/export?format=xlsx',
+    referenceFormat: 'xlsx',
   },
   {
     id: 'ppt_creation_template',
@@ -82,6 +91,9 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     badgeColor: 'bg-amber-100 text-amber-900 border-amber-300',
     acceptedFormats: '.pdf, .pptx, .ppt, .pdf',
     sampleSummary: 'High-Level Review Presentation (15 Slides): Executive summary, key findings, strategic roadmap, and certificate validation framework.',
+    referenceUrl: 'https://drive.google.com/file/d/1SwqysWru3WgWYvPnNswgwAuUjxJQYqLv/view?usp=sharing',
+    referenceDownloadUrl: 'https://drive.google.com/uc?export=download&id=1SwqysWru3WgWYvPnNswgwAuUjxJQYqLv',
+    referenceFormat: 'pdf',
   },
   {
     id: 'inspection_checklist',
@@ -92,6 +104,9 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     badgeColor: 'bg-teal-100 text-teal-800 border-teal-300',
     acceptedFormats: '.pdf, .docx, .doc, .xlsx',
     sampleSummary: 'Comprehensive 25-Point Audit Checklist: 25/25 checkpoints validated and signed off by lead inspector.',
+    referenceUrl: 'https://drive.google.com/file/d/1xplj-AQEdWq3noGegYhot1Hj4Hpz6kLv/view?usp=sharing',
+    referenceDownloadUrl: 'https://drive.google.com/uc?export=download&id=1xplj-AQEdWq3noGegYhot1Hj4Hpz6kLv',
+    referenceFormat: 'pdf',
   },
 ];
 

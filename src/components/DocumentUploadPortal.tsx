@@ -21,6 +21,7 @@ import {
   ExternalLink,
   Link2,
   Download,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { DocumentPreviewModal } from './DocumentPreviewModal';
 
@@ -289,19 +290,47 @@ export function DocumentUploadPortal({
                   {cat.shortDesc}
                 </p>
 
-                {/* Reference Source Document URL (Direct PDF Download from Google Drive) */}
+                {/* Reference Source Document URL (Direct Download from Google Drive / Sheets) */}
                 {cat.referenceUrl && (
-                  <div className="mb-3.5 p-2.5 rounded-xl bg-amber-50/90 border border-amber-200 text-xs flex items-center justify-between gap-2 shadow-xs">
+                  <div
+                    className={`mb-3.5 p-2.5 rounded-xl border text-xs flex items-center justify-between gap-2 shadow-xs ${
+                      cat.referenceFormat === 'xlsx'
+                        ? 'bg-emerald-50/90 border-emerald-200'
+                        : 'bg-amber-50/90 border-amber-200'
+                    }`}
+                  >
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-7 h-7 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
-                        <Link2 className="w-3.5 h-3.5 text-amber-800" />
+                      <div
+                        className={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 ${
+                          cat.referenceFormat === 'xlsx'
+                            ? 'bg-emerald-100 border-emerald-200 text-emerald-800'
+                            : 'bg-amber-100 border-amber-200 text-amber-800'
+                        }`}
+                      >
+                        {cat.referenceFormat === 'xlsx' ? (
+                          <FileSpreadsheet className="w-3.5 h-3.5" />
+                        ) : (
+                          <Link2 className="w-3.5 h-3.5" />
+                        )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[11px] font-bold text-amber-950 truncate">
-                          Source Document (PDF)
+                        <p
+                          className={`text-[11px] font-bold truncate ${
+                            cat.referenceFormat === 'xlsx' ? 'text-emerald-950' : 'text-amber-950'
+                          }`}
+                        >
+                          {cat.referenceFormat === 'xlsx'
+                            ? 'Source Dataset (Excel Sheet)'
+                            : 'Source Document (PDF)'}
                         </p>
-                        <p className="text-[10px] text-amber-700 truncate">
-                          Google Drive Statutory File
+                        <p
+                          className={`text-[10px] truncate ${
+                            cat.referenceFormat === 'xlsx' ? 'text-emerald-700' : 'text-amber-700'
+                          }`}
+                        >
+                          {cat.referenceFormat === 'xlsx'
+                            ? 'Google Sheets (.xlsx)'
+                            : 'Google Drive Statutory File'}
                         </p>
                       </div>
                     </div>
@@ -310,43 +339,26 @@ export function DocumentUploadPortal({
                         href={cat.referenceDownloadUrl || cat.referenceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        download={`${cat.code}_${cat.title.replace(/\s+/g, '_')}.pdf`}
+                        download={`${cat.code}_${cat.title.replace(/\s+/g, '_')}.${
+                          cat.referenceFormat || 'pdf'
+                        }`}
                         id={`drive-download-link-${cat.id}`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] transition shadow-xs cursor-pointer"
-                        title="Click to download reference PDF directly"
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white font-bold text-[11px] transition shadow-xs cursor-pointer ${
+                          cat.referenceFormat === 'xlsx'
+                            ? 'bg-emerald-700 hover:bg-emerald-800'
+                            : 'bg-amber-600 hover:bg-amber-700'
+                        }`}
+                        title={
+                          cat.referenceFormat === 'xlsx'
+                            ? 'Click to download reference Excel sheet (.xlsx) directly'
+                            : 'Click to download reference PDF directly'
+                        }
                       >
                         <Download className="w-3.5 h-3.5" />
-                        <span>Download PDF</span>
+                        <span>
+                          {cat.referenceFormat === 'xlsx' ? 'Download Excel' : 'Download PDF'}
+                        </span>
                       </a>
-                      {!uploadedDoc && (
-                        <button
-                          type="button"
-                          id={`attach-drive-doc-${cat.id}`}
-                          onClick={() => {
-                            const driveDoc: UploadedDocument = {
-                              id: `doc-drive-${Date.now()}-${cat.id}`,
-                              categoryId: cat.id,
-                              categoryTitle: cat.title,
-                              fileName: `${cat.title.replace(/\s+/g, '_')}_Directives.pdf`,
-                              fileSize: 1024 * 480,
-                              fileType: 'PDF',
-                              uploadTime: new Date().toISOString(),
-                              extractedGist:
-                                'Court Order Directives from Google Drive verified. Ratio decidendi & statutory compliance recorded.',
-                              verificationStatus: 'verified',
-                            };
-                            onUpdateDocument(cat.id, driveDoc);
-                            const simulatedDocs = { ...documents, [cat.id]: driveDoc };
-                            if (Object.values(simulatedDocs).filter(Boolean).length === totalCount) {
-                              triggerAutoAdvance();
-                            }
-                          }}
-                          className="px-2 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[10px] transition cursor-pointer"
-                          title="Attach this Google Drive Court Order as module submission"
-                        >
-                          Attach
-                        </button>
-                      )}
                     </div>
                   </div>
                 )}

@@ -110,12 +110,26 @@ export function DocumentPreviewModal({ document, onClose }: DocumentPreviewModal
               href={categoryConfig.referenceDownloadUrl || categoryConfig.referenceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              download={`${categoryConfig.code}_${categoryConfig.title.replace(/\s+/g, '_')}.pdf`}
-              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-xs"
-              title="Download Google Drive source document as PDF"
+              download={`${categoryConfig.code}_${categoryConfig.title.replace(/\s+/g, '_')}.${
+                categoryConfig.referenceFormat || 'pdf'
+              }`}
+              className={`px-4 py-2 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1.5 shadow-xs ${
+                categoryConfig.referenceFormat === 'xlsx'
+                  ? 'bg-emerald-700 hover:bg-emerald-800'
+                  : 'bg-amber-600 hover:bg-amber-700'
+              }`}
+              title={
+                categoryConfig.referenceFormat === 'xlsx'
+                  ? 'Download Google Sheets source dataset as Excel sheet (.xlsx)'
+                  : 'Download Google Drive source document as PDF'
+              }
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Download Source PDF</span>
+              <span>
+                {categoryConfig.referenceFormat === 'xlsx'
+                  ? 'Download Source (Excel)'
+                  : 'Download Source PDF'}
+              </span>
             </a>
           )}
           {document.fileDataUrl && (
