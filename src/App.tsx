@@ -253,7 +253,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 flex flex-col selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen bg-[#f4f7fb] bg-[radial-gradient(ellipse_100%_40%_at_50%_0%,rgba(219,234,254,0.45),rgba(244,247,251,1))] text-slate-800 flex flex-col selection:bg-indigo-600 selection:text-white">
       {/* Top Header with Multi-User Isolation & Stepper */}
       <Header
         user={user}
@@ -325,15 +325,15 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-12">
+      <footer className="bg-white/80 border-t border-slate-200/90 py-6 text-center text-xs text-slate-500 mt-12 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="font-serif">
-            AI-Workshop Submission portal • 9 Mandatory Statutory Modules
+          <p className="font-serif text-slate-700 font-medium">
+            AI-Workshop Statutory Completion Portal • 9 Mandatory Statutory Modules
           </p>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <p className="font-mono text-[11px] text-slate-600">
-              Isolated Workspace: <span className="text-sky-800 font-bold">{user.email}</span>
+              Isolated Workspace: <span className="text-indigo-700 font-bold">{user.email}</span>
             </p>
           </div>
         </div>

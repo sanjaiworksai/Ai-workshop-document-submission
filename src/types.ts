@@ -31,6 +31,11 @@ export interface DocumentCategoryConfig {
   referenceUrl?: string;
   referenceDownloadUrl?: string;
   referenceFormat?: 'pdf' | 'xlsx' | 'docx' | 'csv';
+  gradientBg?: string;
+  borderColor?: string;
+  accentColor?: string;
+  iconBg?: string;
+  glowShadow?: string;
 }
 
 export interface UploadedDocument {
