@@ -159,6 +159,24 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     iconBg: 'bg-teal-100 text-teal-800 border-teal-200',
     glowShadow: 'hover:border-teal-300 hover:shadow-md',
   },
+  {
+    id: 'counter_affidavit',
+    title: 'Counter Affidavit',
+    code: 'DOC-10',
+    shortDesc: 'Statutory defense counter-affidavit, para-wise traverse, legal grounds, and sworn respondent pleading.',
+    iconName: 'FileSignature',
+    badgeColor: 'bg-blue-100 text-blue-900 border-blue-300',
+    acceptedFormats: '.pdf, .docx, .doc, .txt',
+    sampleSummary: 'Counter Affidavit on behalf of Respondent Department: Para-wise factual verification, statutory defenses, and prayer for dismissal.',
+    referenceUrl: 'https://docs.google.com/document/d/1Xcn-t4Or5H_pdCpn4cXhczGInH-8sn53HIjPKGSYm-I/edit?usp=sharing',
+    referenceDownloadUrl: 'https://docs.google.com/document/d/1Xcn-t4Or5H_pdCpn4cXhczGInH-8sn53HIjPKGSYm-I/export?format=docx',
+    referenceFormat: 'docx',
+    gradientBg: 'from-blue-50/80 via-white to-blue-50/40',
+    borderColor: 'border-blue-200/90',
+    accentColor: 'text-blue-800',
+    iconBg: 'bg-blue-100 text-blue-800 border-blue-200',
+    glowShadow: 'hover:border-blue-300 hover:shadow-md',
+  },
 ];
 
 export const DEMO_PARTICIPANTS = [

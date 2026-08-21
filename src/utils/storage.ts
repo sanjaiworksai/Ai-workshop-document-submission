@@ -200,6 +200,7 @@ export function createNewWorkspaceForUser(session: UserSession): UserWorkspaceDa
     signatory2Title: '',
     singleParticipant,
     groupParticipants,
+    customEmblemUrl: '',
     currentStep: 'upload',
     lastUpdated: new Date().toISOString(),
   };

@@ -5,6 +5,7 @@ import { GO_SUMMARY_PDF_BASE64 } from '../data/goSummaryBase64';
 import { ACTION_POINTS_DOCX_BASE64 } from '../data/actionPointsBase64';
 import { INSPECTION_REPORT_DOCX_BASE64 } from '../data/inspectionReportBase64';
 import { LETTER_DRAFTING_DOCX_BASE64 } from '../data/letterDraftingBase64';
+import { COUNTER_AFFIDAVIT_DOCX_BASE64 } from '../data/counterAffidavitBase64';
 import {
   Upload,
   FileText,
@@ -21,6 +22,7 @@ import {
   BarChart3,
   Presentation,
   CheckSquare,
+  FileSignature,
   FileCheck,
   ExternalLink,
   Link2,
@@ -40,6 +42,7 @@ const ICON_COMPONENTS: Record<string, ElementType> = {
   BarChart3,
   Presentation,
   CheckSquare,
+  FileSignature,
 };
 
 interface DocumentUploadPortalProps {
@@ -166,6 +169,31 @@ export function DocumentUploadPortal({
       }
     }
 
+    if (category.id === 'counter_affidavit') {
+      try {
+        const byteCharacters = atob(COUNTER_AFFIDAVIT_DOCX_BASE64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Counter Affidavit.docx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        return;
+      } catch {
+        // fallback to direct download URL
+      }
+    }
+
     if (category.referenceDownloadUrl) {
       window.open(category.referenceDownloadUrl, '_blank');
     } else if (category.referenceUrl) {
@@ -184,7 +212,7 @@ export function DocumentUploadPortal({
   const handleProceed = () => {
     if (!canProceed) {
       setErrorMessage(
-        `All 9 statutory workshop documents are required. Please upload the remaining ${totalCount - uploadedCount} documents to move to the next page.`
+        `All ${totalCount} statutory workshop documents are required. Please upload the remaining ${totalCount - uploadedCount} documents to move to the next page.`
       );
       return;
     }
@@ -269,13 +297,13 @@ export function DocumentUploadPortal({
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold mb-3.5">
               <FileCheck className="w-4 h-4 text-indigo-600" />
-              Step 1 of 3: Statutory 9-Heading Document Submission
+              Step 1 of 3: Statutory {totalCount}-Heading Document Submission
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 font-serif tracking-tight">
               AI-Workshop Submission Portal
             </h1>
             <p className="mt-2.5 text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
-              Submit your files for each of the 9 statutory modules below. Each module is color-coded for fast verification. Once completed, proceed to candidate information and certificate generation.
+              Submit your files for each of the {totalCount} statutory modules below. Each module is color-coded for fast verification. Once completed, proceed to candidate information and certificate generation.
             </p>
           </div>
 
@@ -297,7 +325,7 @@ export function DocumentUploadPortal({
               className="px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-sm font-extrabold text-white flex items-center gap-2.5 transition-all duration-200 cursor-pointer shadow-sm hover:shadow"
             >
               <Upload className="w-4 h-4 text-white" />
-              Batch Select Files (All 9 Modules)
+              Batch Select Files (All {totalCount} Modules)
             </button>
           </div>
         </div>
@@ -308,7 +336,7 @@ export function DocumentUploadPortal({
         <div className="p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-500 text-emerald-900 text-sm flex items-center gap-3 shadow-md animate-pulse">
           <CheckCircle2 className="w-6 h-6 text-emerald-600 shrink-0" />
           <div className="flex-1">
-            <p className="font-bold text-base">All 9 Statutory Documents Submitted Successfully!</p>
+            <p className="font-bold text-base">All {totalCount} Statutory Documents Submitted Successfully!</p>
             <p className="text-xs text-emerald-700 mt-0.5">
               Criteria verified. Automatically moving to Participant Details...
             </p>
@@ -324,7 +352,7 @@ export function DocumentUploadPortal({
         </div>
       )}
 
-      {/* 9 Document Categories Grid */}
+      {/* Document Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {DOCUMENT_CATEGORIES.map((cat, idx) => {
           const uploadedDoc = documents[cat.id];
@@ -374,7 +402,7 @@ export function DocumentUploadPortal({
                           {cat.code}
                         </span>
                         <span className="text-[11px] text-slate-500 font-mono font-semibold">
-                          Heading {idx + 1}/9
+                          Heading {idx + 1}/{totalCount}
                         </span>
                       </div>
                       {/* Increased Module Heading Size */}
@@ -413,6 +441,8 @@ export function DocumentUploadPortal({
                         ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
                         : cat.id === 'letter_drafting'
                         ? 'bg-purple-50/90 border-purple-200 text-purple-950'
+                        : cat.id === 'counter_affidavit'
+                        ? 'bg-blue-50/90 border-blue-200 text-blue-950'
                         : cat.referenceFormat === 'xlsx'
                         ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900'
                         : 'bg-amber-50/80 border-amber-200 text-amber-900'
@@ -429,6 +459,8 @@ export function DocumentUploadPortal({
                             ? 'bg-emerald-100 border-emerald-200 text-emerald-700'
                             : cat.id === 'letter_drafting'
                             ? 'bg-purple-100 border-purple-200 text-purple-700'
+                            : cat.id === 'counter_affidavit'
+                            ? 'bg-blue-100 border-blue-200 text-blue-700'
                             : cat.referenceFormat === 'xlsx'
                             ? 'bg-emerald-100 border-emerald-200 text-emerald-700'
                             : 'bg-amber-100 border-amber-200 text-amber-700'
@@ -453,6 +485,8 @@ export function DocumentUploadPortal({
                               ? 'text-emerald-900'
                               : cat.id === 'letter_drafting'
                               ? 'text-purple-900'
+                              : cat.id === 'counter_affidavit'
+                              ? 'text-blue-900'
                               : cat.referenceFormat === 'xlsx'
                               ? 'text-emerald-800'
                               : 'text-amber-800'
@@ -468,6 +502,8 @@ export function DocumentUploadPortal({
                             ? 'Inspection Report (Word .docx)'
                             : cat.id === 'letter_drafting'
                             ? 'Letter Drafting Model (Word .docx)'
+                            : cat.id === 'counter_affidavit'
+                            ? 'Counter Affidavit (Word .docx)'
                             : 'Source Document (PDF)'}
                         </p>
                         <p
@@ -480,6 +516,8 @@ export function DocumentUploadPortal({
                               ? 'text-emerald-700'
                               : cat.id === 'letter_drafting'
                               ? 'text-purple-700'
+                              : cat.id === 'counter_affidavit'
+                              ? 'text-blue-700'
                               : cat.referenceFormat === 'xlsx'
                               ? 'text-emerald-600'
                               : 'text-amber-600'
@@ -507,6 +545,8 @@ export function DocumentUploadPortal({
                             ? 'bg-emerald-700 hover:bg-emerald-800'
                             : cat.id === 'letter_drafting'
                             ? 'bg-purple-700 hover:bg-purple-800'
+                            : cat.id === 'counter_affidavit'
+                            ? 'bg-blue-700 hover:bg-blue-800'
                             : cat.referenceFormat === 'xlsx'
                             ? 'bg-emerald-700 hover:bg-emerald-800'
                             : 'bg-amber-600 hover:bg-amber-700'
@@ -520,6 +560,8 @@ export function DocumentUploadPortal({
                             ? 'Click to download Inspection Report.docx directly'
                             : cat.id === 'letter_drafting'
                             ? 'Click to download Letter Drafting.docx directly'
+                            : cat.id === 'counter_affidavit'
+                            ? 'Click to download Counter Affidavit.docx directly'
                             : cat.referenceFormat === 'xlsx'
                             ? 'Click to download reference Excel sheet (.xlsx) directly'
                             : `Click to download reference PDF for ${cat.title} directly`
@@ -533,7 +575,8 @@ export function DocumentUploadPortal({
                             ? 'Download G.O. Summary'
                             : cat.id === 'action_point_extraction' ||
                               cat.id === 'inspection_report' ||
-                              cat.id === 'letter_drafting'
+                              cat.id === 'letter_drafting' ||
+                              cat.id === 'counter_affidavit'
                             ? 'Download Word (.docx)'
                             : 'Download PDF'}
                         </span>
@@ -664,13 +707,13 @@ export function DocumentUploadPortal({
               className={`w-6 h-6 ${isAllUploaded ? 'text-emerald-600' : 'text-slate-400'}`}
             />
             {isAllUploaded
-              ? 'All 9 Workshop Modules Submitted & Verified'
-              : `Workshop Modules Required (${uploadedCount}/9 Submitted)`}
+              ? `All ${totalCount} Workshop Modules Submitted & Verified`
+              : `Workshop Modules Required (${uploadedCount}/${totalCount} Submitted)`}
           </h3>
           <p className="text-xs sm:text-sm text-slate-600 mt-1.5 max-w-xl">
             {isAllUploaded
-              ? 'All 9 modules submitted. Proceed to candidate information and certificate issuance.'
-              : `Please submit all 9 workshop documents (${uploadedCount} uploaded, ${totalCount - uploadedCount} remaining) to unlock the next page.`}
+              ? `All ${totalCount} modules submitted. Proceed to candidate information and certificate issuance.`
+              : `Please submit all ${totalCount} workshop documents (${uploadedCount} uploaded, ${totalCount - uploadedCount} remaining) to unlock the next page.`}
           </p>
         </div>
 
@@ -685,7 +728,7 @@ export function DocumentUploadPortal({
                 ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-md cursor-pointer'
                 : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
             }`}
-            title={canProceed ? 'Proceed to candidate details' : `Upload all 9 module documents first (${uploadedCount}/${totalCount})`}
+            title={canProceed ? 'Proceed to candidate details' : `Upload all ${totalCount} module documents first (${uploadedCount}/${totalCount})`}
           >
             <span>Proceed to Participant Details</span>
             <ArrowRight className={`w-4 h-4 ${canProceed ? 'text-amber-400' : 'text-slate-400'}`} />

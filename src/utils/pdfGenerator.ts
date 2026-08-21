@@ -2,10 +2,12 @@ import { jsPDF } from 'jspdf';
 import { Participant, CertificateTheme, DocumentCategoryId, UploadedDocument } from '../types';
 import { DOCUMENT_CATEGORIES } from '../data/categories';
 import { OFFICIAL_SEAL_BASE64 } from '../assets/sealBase64';
+import { TAMIL_NADU_EMBLEM_BASE64 } from '../assets/tamilNaduEmblemBase64';
 
 interface GenerateOptions {
   submissionTitle?: string;
   theme?: CertificateTheme;
+  customEmblemUrl?: string;
   signatory1Name?: string;
   signatory1Title?: string;
   signatory2Name?: string;
@@ -103,70 +105,88 @@ function drawCertificatePage(
     doc.circle(cx, cy, 2.5, 'FD');
   });
 
-  // 4. Header & Organization
-  const orgName = options.organization || participant.organization || 'AI WORKSHOP PROGRAM';
+  // 4. Top Middle: Custom Uploaded Emblem or Official State Emblem
+  const topEmblemSize = 18; // 18mm x 18mm
+  const topEmblemX = width / 2 - topEmblemSize / 2;
+  const topEmblemY = 17;
+  const emblemToDraw = options.customEmblemUrl || TAMIL_NADU_EMBLEM_BASE64;
+  try {
+    const isPng = emblemToDraw.startsWith('data:image/png');
+    const isSvg = emblemToDraw.startsWith('data:image/svg');
+    const format = isPng ? 'PNG' : isSvg ? 'PNG' : 'JPEG';
+    doc.addImage(emblemToDraw, format, topEmblemX, topEmblemY, topEmblemSize, topEmblemSize);
+  } catch {
+    try {
+      doc.addImage(TAMIL_NADU_EMBLEM_BASE64, 'JPEG', topEmblemX, topEmblemY, topEmblemSize, topEmblemSize);
+    } catch {
+      // Fallback if image fails in pdf context
+    }
+  }
+
+  // 5. Header & Organization
+  const orgName = options.organization || participant.organization || 'GOVERNMENT OF TAMIL NADU';
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text(orgName.toUpperCase(), width / 2, 26, { align: 'center' });
+  doc.text(orgName.toUpperCase(), width / 2, 38.5, { align: 'center' });
 
   // Sub-header rule
   doc.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
   doc.setLineWidth(0.4);
-  doc.line(width / 2 - 50, 29, width / 2 + 50, 29);
+  doc.line(width / 2 - 50, 41, width / 2 + 50, 41);
 
-  // 5. Certificate Title
-  doc.setFont('times', 'bold');
-  doc.setFontSize(24);
-  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('CERTIFICATE OF COMPLETION', width / 2, 40, { align: 'center' });
-
-  // 6. Sub-title
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9.5);
-  doc.setTextColor(100, 116, 139);
-  doc.text('OFFICIAL VERIFIED CERTIFICATION', width / 2, 46, { align: 'center' });
-
-  // 7. "This is proudly presented to"
-  doc.setFont('times', 'italic');
-  doc.setFontSize(12);
-  doc.setTextColor(71, 85, 105);
-  doc.text('This is to certify that', width / 2, 56, { align: 'center' });
-
-  // 8. Participant Name (Prominent)
+  // 6. Certificate Title
   doc.setFont('times', 'bold');
   doc.setFontSize(22);
+  doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
+  doc.text('CERTIFICATE OF COMPLETION', width / 2, 49, { align: 'center' });
+
+  // 7. Sub-title
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(100, 116, 139);
+  doc.text('OFFICIAL VERIFIED CERTIFICATION', width / 2, 54.5, { align: 'center' });
+
+  // 8. "This is proudly presented to"
+  doc.setFont('times', 'italic');
+  doc.setFontSize(11.5);
+  doc.setTextColor(71, 85, 105);
+  doc.text('This is to certify that', width / 2, 63.5, { align: 'center' });
+
+  // 9. Participant Name (Prominent)
+  doc.setFont('times', 'bold');
+  doc.setFontSize(21);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text(participant.fullName, width / 2, 68, { align: 'center' });
+  doc.text(participant.fullName, width / 2, 74, { align: 'center' });
 
   // Name underline
   doc.setDrawColor(colors.accent[0], colors.accent[1], colors.accent[2]);
   doc.setLineWidth(0.8);
   const nameWidth = Math.max(doc.getTextWidth(participant.fullName) + 20, 80);
-  doc.line(width / 2 - nameWidth / 2, 71, width / 2 + nameWidth / 2, 71);
+  doc.line(width / 2 - nameWidth / 2, 76.5, width / 2 + nameWidth / 2, 76.5);
 
-  // 9. Participant Designation & Department
+  // 10. Participant Designation & Department
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10.5);
+  doc.setFontSize(10);
   doc.setTextColor(51, 65, 85);
   const designationLine = `${participant.designation} • ${participant.department}`;
-  doc.text(designationLine, width / 2, 77, { align: 'center' });
+  doc.text(designationLine, width / 2, 82, { align: 'center' });
 
-  // 10. Main Certificate Body Statement
+  // 11. Main Certificate Body Statement
   doc.setFont('times', 'normal');
-  doc.setFontSize(10);
+  doc.setFontSize(9.5);
   doc.setTextColor(71, 85, 105);
   const bodyText =
-    'has successfully compiled, submitted, and completed all 9 core statutory and technical modules. All submissions and practical exercises have been verified with complete technical compliance:';
+    `has successfully compiled, submitted, and completed all ${DOCUMENT_CATEGORIES.length} core statutory and technical modules. All submissions and practical exercises have been verified with complete technical compliance:`;
   
   const splitBody = doc.splitTextToSize(bodyText, width - 60);
-  doc.text(splitBody, width / 2, 85, { align: 'center' });
+  doc.text(splitBody, width / 2, 89, { align: 'center' });
 
-  // 11. Document Category Badges (9 Items Grid: 3 columns x 3 rows)
+  // 12. Document Category Badges (Grid: 3 columns)
   const gridStartX = 24;
-  const gridStartY = 96;
+  const gridStartY = 96.5;
   const colWidth = (width - 48) / 3;
-  const rowHeight = 11.5;
+  const rowHeight = 9.5;
 
   DOCUMENT_CATEGORIES.forEach((cat, idx) => {
     const col = idx % 3;
@@ -178,31 +198,31 @@ function drawCertificatePage(
     doc.setFillColor(255, 255, 255);
     doc.setDrawColor(226, 232, 240);
     doc.setLineWidth(0.3);
-    doc.roundedRect(x + 2, y, colWidth - 4, 9.5, 1.5, 1.5, 'FD');
+    doc.roundedRect(x + 2, y, colWidth - 4, 7.8, 1.5, 1.5, 'FD');
 
     // Verification checkmark circle
     doc.setFillColor(colors.accent[0], colors.accent[1], colors.accent[2]);
-    doc.circle(x + 6.5, y + 4.75, 2.2, 'F');
+    doc.circle(x + 6.5, y + 3.9, 2, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(5.5);
-    doc.text('✓', x + 5.7, y + 6.2);
+    doc.text('✓', x + 5.7, y + 5.2);
 
     // Number code & Category Title
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7.5);
+    doc.setFontSize(7);
     doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-    doc.text(cat.title, x + 11, y + 6.2);
+    doc.text(cat.title, x + 11, y + 5.2);
 
     // Verified tag on right
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6);
+    doc.setFontSize(5.5);
     doc.setTextColor(16, 185, 129);
-    doc.text('VERIFIED', x + colWidth - 16, y + 6.2);
+    doc.text('VERIFIED', x + colWidth - 16, y + 5.2);
   });
 
-  // 12. Bottom Section: Left Metadata, Center Seal, Right Single Signature (Thiru . Vishu Mahajan I.A.S)
-  const bottomY = 148;
+  // 13. Bottom Section: Left Metadata, Center Seal, Right Single Signature (Thiru . Vishu Mahajan I.A.S)
+  const bottomY = 149;
 
   // Left: Security & Serial details (No QR code)
   doc.setFont('helvetica', 'bold');
@@ -294,7 +314,7 @@ function drawCertificatePage(
   doc.setFontSize(5.5);
   doc.setTextColor(148, 163, 184);
   doc.text(
-    'This is a digitally generated and cryptographically verifiable certificate issued upon successful completion of all 9 modules.',
+    `This is a digitally generated and cryptographically verifiable certificate issued upon successful completion of all ${DOCUMENT_CATEGORIES.length} modules.`,
     width / 2,
     height - 14,
     { align: 'center' }
@@ -332,31 +352,49 @@ function drawGroupMasterRosterPage(
   doc.setLineWidth(0.6);
   doc.roundedRect(15, 15, width - 30, height - 30, 2, 2, 'D');
 
+  // Top Middle: Custom Uploaded Emblem or Official State Emblem
+  const topEmblemSize = 14;
+  const topEmblemX = width / 2 - topEmblemSize / 2;
+  const topEmblemY = 16;
+  const emblemToDraw = options.customEmblemUrl || TAMIL_NADU_EMBLEM_BASE64;
+  try {
+    const isPng = emblemToDraw.startsWith('data:image/png');
+    const isSvg = emblemToDraw.startsWith('data:image/svg');
+    const format = isPng ? 'PNG' : isSvg ? 'PNG' : 'JPEG';
+    doc.addImage(emblemToDraw, format, topEmblemX, topEmblemY, topEmblemSize, topEmblemSize);
+  } catch {
+    try {
+      doc.addImage(TAMIL_NADU_EMBLEM_BASE64, 'JPEG', topEmblemX, topEmblemY, topEmblemSize, topEmblemSize);
+    } catch {
+      // ignore
+    }
+  }
+
   // Header
-  const orgName = options.organization || 'AI WORKSHOP PROGRAM';
+  const orgName = options.organization || 'GOVERNMENT OF TAMIL NADU';
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
-  doc.text(orgName.toUpperCase(), width / 2, 24, { align: 'center' });
+  doc.text(orgName.toUpperCase(), width / 2, 33, { align: 'center' });
 
   doc.setFont('times', 'bold');
-  doc.setFontSize(20);
+  doc.setFontSize(18);
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('GROUP COMPLETION & ENDORSEMENT CERTIFICATE', width / 2, 34, { align: 'center' });
+  doc.text('GROUP COMPLETION & ENDORSEMENT CERTIFICATE', width / 2, 40, { align: 'center' });
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setTextColor(100, 116, 139);
   doc.text(
-    `Official Group Record • Total ${participants.length} Certified Participants • All 9 Modules Completed`,
+    `Official Group Record • Total ${participants.length} Certified Participants • All ${DOCUMENT_CATEGORIES.length} Modules Completed`,
     width / 2,
-    40,
+    45.5,
     { align: 'center' }
   );
 
   // Group Roster Table Header
   const tableX = 22;
-  let tableY = 48;
+  let tableY = 50;
   const colWidths = [12, 60, 65, 65, 45]; // Total = 247mm
 
   doc.setFillColor(colors.secondary[0], colors.secondary[1], colors.secondary[2]);
@@ -404,12 +442,12 @@ function drawGroupMasterRosterPage(
     tableY += 8.5;
   });
 
-  // Checklist of 9 Documents Verified
+  // Checklist of Documents Verified
   const checkY = tableY + 6;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8.5);
   doc.setTextColor(colors.primary[0], colors.primary[1], colors.primary[2]);
-  doc.text('Mandatory 9-Module Verification Audit Status:', tableX, checkY);
+  doc.text(`Mandatory ${DOCUMENT_CATEGORIES.length}-Module Verification Audit Status:`, tableX, checkY);
 
   const docPillWidth = (width - 44) / 3;
   DOCUMENT_CATEGORIES.forEach((cat, idx) => {

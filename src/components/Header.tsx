@@ -83,7 +83,7 @@ export function Header({
               }`}
               title={
                 uploadedCount < totalCount
-                  ? `Upload all 9 statutory documents to unlock (${uploadedCount}/${totalCount} submitted)`
+                  ? `Upload all ${totalCount} statutory documents to unlock (${uploadedCount}/${totalCount} submitted)`
                   : 'Go to Participant Details'
               }
             >
@@ -111,7 +111,7 @@ export function Header({
               }`}
               title={
                 uploadedCount < totalCount
-                  ? `Upload all 9 statutory documents to unlock (${uploadedCount}/${totalCount} submitted)`
+                  ? `Upload all ${totalCount} statutory documents to unlock (${uploadedCount}/${totalCount} submitted)`
                   : 'Go to Certificate Download'
               }
             >

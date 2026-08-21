@@ -31,6 +31,8 @@ interface ParticipantDetailsStepProps {
   defaultOrganization?: string;
   theme: CertificateTheme;
   onThemeChange: (theme: CertificateTheme) => void;
+  customEmblemUrl?: string;
+  onCustomEmblemUrlChange?: (url: string) => void;
   mode: 'individual' | 'group';
   onModeChange: (mode: 'individual' | 'group') => void;
   singleParticipant: Participant;
@@ -57,6 +59,8 @@ export function ParticipantDetailsStep({
   defaultName,
   theme,
   onThemeChange,
+  customEmblemUrl,
+  onCustomEmblemUrlChange,
   mode,
   onModeChange,
   singleParticipant,
@@ -176,15 +180,15 @@ export function ParticipantDetailsStep({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
-      {/* Warning Banner if Not All 9 Documents Uploaded */}
+      {/* Warning Banner if Not All Documents Uploaded */}
       {uploadedCount < totalCount && (
         <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-fade-in">
           <div className="flex items-start sm:items-center gap-3">
             <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
             <div>
-              <p className="font-bold text-sm">Incomplete Module Submissions ({uploadedCount}/9 Documents Uploaded)</p>
+              <p className="font-bold text-sm">Incomplete Module Submissions ({uploadedCount}/{totalCount} Documents Uploaded)</p>
               <p className="text-xs text-amber-700 mt-0.5">
-                Statutory certificate generation requires uploading all 9 workshop module documents. Please return to Step 1 to submit the remaining {totalCount - uploadedCount} documents.
+                Statutory certificate generation requires uploading all {totalCount} workshop module documents. Please return to Step 1 to submit the remaining {totalCount - uploadedCount} documents.
               </p>
             </div>
           </div>
@@ -220,7 +224,7 @@ export function ParticipantDetailsStep({
               <FileCheck className="w-5 h-5 text-emerald-600" />
               <div>
                 <p className="font-bold text-slate-800">Modules Submitted</p>
-                <p className="text-[11px] text-slate-500 font-mono">{uploadedCount} of 9 Modules</p>
+                <p className="text-[11px] text-slate-500 font-mono">{uploadedCount} of {totalCount} Modules</p>
               </div>
             </div>
           </div>
@@ -604,7 +608,7 @@ export function ParticipantDetailsStep({
             title={
               uploadedCount === totalCount
                 ? 'Generate official certificates'
-                : `Upload all 9 module documents in Step 1 first (${uploadedCount}/${totalCount} submitted)`
+                : `Upload all ${totalCount} module documents in Step 1 first (${uploadedCount}/${totalCount} submitted)`
             }
           >
             <span>Generate & Proceed to Certificate Download</span>

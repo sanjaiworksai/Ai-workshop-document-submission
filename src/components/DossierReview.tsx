@@ -48,7 +48,7 @@ export function DossierReview({
             AI-Workshop Module Review & Verification
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white font-serif">
-            9-Module AI-Workshop Compliance Review
+            {totalCount}-Module AI-Workshop Compliance Review
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Review all submitted documents, extracted gists, and statutory verification status before official certificate generation.
@@ -84,7 +84,7 @@ export function DossierReview({
             {isComplete ? '100% Fully Compliant' : `${uploadedCount} / ${totalCount} Modules Ready`}
           </p>
           <span className="text-[11px] text-slate-500 mt-1 block">
-            All 9 categories indexed & verified
+            All {totalCount} categories indexed & verified
           </span>
         </div>
 
@@ -110,12 +110,12 @@ export function DossierReview({
         </div>
       </div>
 
-      {/* Table of all 9 Headings and their Status */}
+      {/* Table of all Headings and their Status */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-white font-serif">
-              9-Heading AI-Workshop Itemized Module Breakdown
+              {totalCount}-Heading AI-Workshop Itemized Module Breakdown
             </h3>
             <p className="text-xs text-slate-400">
               Each document fulfills statutory audit requirements

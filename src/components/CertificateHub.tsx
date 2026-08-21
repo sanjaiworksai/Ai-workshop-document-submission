@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, ChangeEvent } from 'react';
 import { Participant, CertificateTheme, DocumentCategoryId, UploadedDocument } from '../types';
 import { DOCUMENT_CATEGORIES } from '../data/categories';
 import {
@@ -7,6 +7,7 @@ import {
 } from '../utils/pdfGenerator';
 import confetti from 'canvas-confetti';
 import { OfficialSeal } from './OfficialSeal';
+import { TAMIL_NADU_EMBLEM_BASE64 } from '../assets/tamilNaduEmblemBase64';
 import {
   Award,
   Download,
@@ -24,6 +25,10 @@ import {
   FileText,
   ExternalLink,
   AlertCircle,
+  UploadCloud,
+  ImageIcon,
+  RotateCcw,
+  Camera,
 } from 'lucide-react';
 
 interface CertificateHubProps {
@@ -32,6 +37,8 @@ interface CertificateHubProps {
   mode: 'individual' | 'group';
   singleParticipant: Participant;
   groupParticipants: Participant[];
+  customEmblemUrl?: string;
+  onCustomEmblemUrlChange?: (url: string) => void;
   signatory1Name: string;
   signatory1Title: string;
   signatory2Name: string;
@@ -46,6 +53,8 @@ export function CertificateHub({
   mode,
   singleParticipant,
   groupParticipants,
+  customEmblemUrl,
+  onCustomEmblemUrlChange,
   signatory1Name,
   signatory1Title,
   signatory2Name,
@@ -57,6 +66,11 @@ export function CertificateHub({
   const [selectedGroupPreviewIndex, setSelectedGroupPreviewIndex] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [downloadSuccessMessage, setDownloadSuccessMessage] = useState('');
+  const [isDraggingEmblem, setIsDraggingEmblem] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const displayedEmblem = customEmblemUrl || TAMIL_NADU_EMBLEM_BASE64;
+  const isCustomEmblemActive = Boolean(customEmblemUrl && customEmblemUrl.trim().length > 0);
 
   const activeParticipant: Participant =
     mode === 'individual'
@@ -65,6 +79,38 @@ export function CertificateHub({
 
   const uploadedCount = Object.values(documents).filter(Boolean).length;
   const totalCount = DOCUMENT_CATEGORIES.length;
+
+  const handleImageFile = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload a valid image file (PNG, JPG, JPEG, SVG, WebP).');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (result && onCustomEmblemUrlChange) {
+        onCustomEmblemUrlChange(result);
+        setDownloadSuccessMessage('Top certificate image updated successfully!');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageFile(file);
+    }
+    // reset input
+    if (e.target) e.target.value = '';
+  };
+
+  const handleResetEmblem = () => {
+    if (onCustomEmblemUrlChange) {
+      onCustomEmblemUrlChange('');
+      setDownloadSuccessMessage('Reset to default Tamil Nadu State Emblem.');
+    }
+  };
 
   const triggerCelebration = () => {
     confetti({
@@ -76,7 +122,7 @@ export function CertificateHub({
 
   const handleDownloadSingle = (p: Participant) => {
     if (uploadedCount < totalCount) {
-      alert(`Cannot generate or download certificate: All 9 statutory workshop module documents must be submitted first (currently ${uploadedCount}/${totalCount}).`);
+      alert(`Cannot generate or download certificate: All ${totalCount} statutory workshop module documents must be submitted first (currently ${uploadedCount}/${totalCount}).`);
       return;
     }
 
@@ -87,6 +133,7 @@ export function CertificateHub({
       downloadSingleCertificate(p, {
         submissionTitle: 'Official Certificate of Completion',
         theme,
+        customEmblemUrl,
         organization: organizationName,
         signatory1Name: signatory1Name || 'Thiru . Vishu Mahajan I.A.S',
         signatory1Title: signatory1Title || 'Authorized Signatory',
@@ -101,7 +148,7 @@ export function CertificateHub({
 
   const handleDownloadGroupBundle = () => {
     if (uploadedCount < totalCount) {
-      alert(`Cannot generate or download certificates: All 9 statutory workshop module documents must be submitted first (currently ${uploadedCount}/${totalCount}).`);
+      alert(`Cannot generate or download certificates: All ${totalCount} statutory workshop module documents must be submitted first (currently ${uploadedCount}/${totalCount}).`);
       return;
     }
 
@@ -112,6 +159,7 @@ export function CertificateHub({
       downloadGroupCertificatesBundle(groupParticipants, {
         submissionTitle: 'Official Certificate of Completion',
         theme,
+        customEmblemUrl,
         organization: organizationName,
         signatory1Name: signatory1Name || 'Thiru . Vishu Mahajan I.A.S',
         signatory1Title: signatory1Title || 'Authorized Signatory',
@@ -164,15 +212,15 @@ export function CertificateHub({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fade-in">
-      {/* Warning Banner if Not All 9 Documents Uploaded */}
+      {/* Warning Banner if Not All Documents Uploaded */}
       {uploadedCount < totalCount && (
         <div className="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm animate-fade-in">
           <div className="flex items-start sm:items-center gap-3">
             <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5 sm:mt-0" />
             <div>
-              <p className="font-bold text-sm">Statutory 9-Document Requirement Incomplete ({uploadedCount}/9)</p>
+              <p className="font-bold text-sm">Statutory {totalCount}-Document Requirement Incomplete ({uploadedCount}/{totalCount})</p>
               <p className="text-xs text-rose-700 mt-0.5">
-                Official certificates cannot be issued or downloaded until all 9 statutory workshop documents are submitted. Please return to Step 1 to upload the remaining {totalCount - uploadedCount} modules.
+                Official certificates cannot be issued or downloaded until all {totalCount} statutory workshop documents are submitted. Please return to Step 1 to upload the remaining {totalCount - uploadedCount} modules.
               </p>
             </div>
           </div>
@@ -199,7 +247,7 @@ export function CertificateHub({
               Certificate Download Center
             </h1>
             <p className="mt-2.5 text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
-              Official PDF completion certificates generated based on your 9-module statutory submission. Download individually or as a complete bundle.
+              Official PDF completion certificates generated based on your {totalCount}-module statutory submission. Download individually or as a complete bundle.
             </p>
           </div>
 
@@ -227,7 +275,7 @@ export function CertificateHub({
                 title={
                   uploadedCount === totalCount
                     ? 'Download official certificate'
-                    : `Upload all 9 module documents in Step 1 first (${uploadedCount}/${totalCount})`
+                    : `Upload all ${totalCount} module documents in Step 1 first (${uploadedCount}/${totalCount})`
                 }
               >
                 <Download className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />
@@ -247,7 +295,7 @@ export function CertificateHub({
                 title={
                   uploadedCount === totalCount
                     ? 'Download all certificates'
-                    : `Upload all 9 module documents in Step 1 first (${uploadedCount}/${totalCount})`
+                    : `Upload all ${totalCount} module documents in Step 1 first (${uploadedCount}/${totalCount})`
                 }
               >
                 <Download className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />
@@ -301,6 +349,15 @@ export function CertificateHub({
             id="certificate-print-area"
             className={`bg-[#fffdfa] border-[8px] ${themeStyles.border} rounded-2xl p-6 sm:p-10 shadow-xl relative overflow-hidden text-slate-900`}
           >
+            {/* Hidden file input for manual image upload */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+              className="hidden"
+              onChange={handleFileInputChange}
+            />
+
             {/* Inner Decorative Border */}
             <div
               className={`border-2 ${themeStyles.innerBorder} rounded-xl p-6 sm:p-8 h-full flex flex-col justify-between relative bg-white/70`}
@@ -311,16 +368,30 @@ export function CertificateHub({
               </div>
 
               {/* Top Certificate Header */}
-              <div className="text-center relative z-10">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-slate-900 text-amber-400 mb-3 shadow-md">
-                  <Award className="w-8 h-8" />
+              <div className="text-center relative z-10 flex flex-col items-center">
+                {/* Top Middle Emblem (Interactive: Click to upload/change) */}
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="group relative mb-2.5 w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center cursor-pointer transition-transform hover:scale-105 duration-200"
+                  title="Click to manually upload / change the top middle certificate image"
+                >
+                  <img
+                    src={displayedEmblem}
+                    alt="Certificate Top Middle Emblem"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-contain select-none drop-shadow-sm transition-opacity group-hover:opacity-85"
+                  />
+                  <div className="absolute inset-0 bg-slate-900/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-1 text-center shadow-md">
+                    <Camera className="w-5 h-5 mb-0.5" />
+                    <span className="text-[9px] font-bold leading-tight">Change Image</span>
+                  </div>
                 </div>
 
-                <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.25em] text-slate-600 font-semibold">
-                  {organizationName}
+                <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.25em] text-slate-700 font-bold">
+                  {organizationName || 'GOVERNMENT OF TAMIL NADU'}
                 </p>
 
-                <h2 className="text-2xl sm:text-4xl font-bold font-serif tracking-tight text-slate-900 mt-2">
+                <h2 className="text-2xl sm:text-4xl font-bold font-serif tracking-tight text-slate-900 mt-1.5">
                   Certificate of Completion
                 </h2>
 
@@ -328,7 +399,7 @@ export function CertificateHub({
                   Official Completion & Verification Certificate
                 </p>
 
-                <div className="w-24 h-0.5 bg-amber-500 mx-auto my-4" />
+                <div className="w-24 h-0.5 bg-amber-500 mx-auto my-3.5" />
               </div>
 
               {/* Recipient Body */}
@@ -346,11 +417,11 @@ export function CertificateHub({
                 </p>
 
                 <p className="text-xs text-slate-600 max-w-xl mx-auto leading-relaxed pt-2">
-                  has successfully submitted, fulfilled, and completed all 9 core statutory and technical
+                  has successfully submitted, fulfilled, and completed all {totalCount} core statutory and technical
                   modules with verified compliance and proficiency.
                 </p>
 
-                {/* 9 Headings Compact Grid in Certificate */}
+                {/* Statutory Headings Compact Grid in Certificate */}
                 <div className="pt-3 pb-1">
                   <div className="inline-flex flex-wrap items-center justify-center gap-1.5 max-w-xl text-[10px] text-slate-600">
                     {DOCUMENT_CATEGORIES.map((cat) => (
@@ -403,8 +474,101 @@ export function CertificateHub({
           </div>
         </div>
 
-        {/* Right 1 Col: Download & Roster Panel */}
+        {/* Right 1 Col: Download & Top Emblem Controls */}
         <div className="space-y-6">
+          {/* Top Middle Emblem Upload & Management Card */}
+          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-indigo-600" />
+                Certificate Top Image
+              </h3>
+              {isCustomEmblemActive ? (
+                <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                  Custom Image
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded-full">
+                  Official State Emblem
+                </span>
+              )}
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3.5">
+              <div className="w-14 h-14 rounded-xl bg-white border border-slate-200 p-1.5 flex items-center justify-center shrink-0 shadow-xs">
+                <img
+                  src={displayedEmblem}
+                  alt="Top Emblem Preview"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-slate-800 truncate">
+                  {isCustomEmblemActive ? 'Custom Uploaded Image' : 'Official State Emblem'}
+                </p>
+                <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                  Displayed at top-middle of certificate &amp; PDF
+                </p>
+              </div>
+            </div>
+
+            {/* Drag and drop / Manual upload zone */}
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDraggingEmblem(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                setIsDraggingEmblem(false);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDraggingEmblem(false);
+                const file = e.dataTransfer.files?.[0];
+                if (file) handleImageFile(file);
+              }}
+              onClick={() => fileInputRef.current?.click()}
+              className={`p-4 rounded-2xl border-2 border-dashed transition text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 ${
+                isDraggingEmblem
+                  ? 'border-indigo-500 bg-indigo-50/70'
+                  : 'border-slate-300 hover:border-indigo-400 bg-slate-50/60 hover:bg-indigo-50/30'
+              }`}
+            >
+              <UploadCloud className="w-5 h-5 text-indigo-600" />
+              <p className="text-xs font-bold text-slate-800">
+                Click or Drag Image to Upload
+              </p>
+              <p className="text-[10px] text-slate-500">
+                PNG, JPG, SVG, WebP supported
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-1 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition"
+              >
+                <UploadCloud className="w-3.5 h-3.5" />
+                Upload New Image
+              </button>
+
+              {isCustomEmblemActive && (
+                <button
+                  type="button"
+                  onClick={handleResetEmblem}
+                  className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1 cursor-pointer transition"
+                  title="Reset to official Tamil Nadu emblem"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Reset
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Individual PDF Download Action */}
           <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
@@ -447,7 +611,7 @@ export function CertificateHub({
               </p>
               <p className="flex justify-between">
                 <span className="text-slate-500">Workshop Modules:</span>
-                <span className="font-bold text-emerald-700">9 Completed Modules</span>
+                <span className="font-bold text-emerald-700">{totalCount} Completed Modules</span>
               </p>
             </div>
           </div>
@@ -479,7 +643,7 @@ export function CertificateHub({
                           ? 'bg-slate-100 hover:bg-indigo-600 hover:text-white text-slate-700 cursor-pointer border border-slate-200'
                           : 'bg-slate-100 text-slate-400 cursor-not-allowed opacity-50'
                       }`}
-                      title={uploadedCount === totalCount ? `Download PDF for ${p.fullName}` : 'All 9 documents required'}
+                      title={uploadedCount === totalCount ? `Download PDF for ${p.fullName}` : `All ${totalCount} documents required`}
                     >
                       <Download className="w-3 h-3" />
                       PDF
@@ -490,7 +654,7 @@ export function CertificateHub({
             </div>
           )}
 
-          {/* 9 Headings Checklist Verified Card */}
+          {/* Statutory Headings Checklist Verified Card */}
           <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-3">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -539,7 +703,7 @@ export function CertificateHub({
               title={
                 uploadedCount === totalCount
                   ? 'Download official certificate'
-                  : `Upload all 9 module documents first (${uploadedCount}/${totalCount})`
+                  : `Upload all ${totalCount} module documents first (${uploadedCount}/${totalCount})`
               }
             >
               <Download className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />
@@ -558,7 +722,7 @@ export function CertificateHub({
               title={
                 uploadedCount === totalCount
                   ? 'Download all certificates'
-                  : `Upload all 9 module documents first (${uploadedCount}/${totalCount})`
+                  : `Upload all ${totalCount} module documents first (${uploadedCount}/${totalCount})`
               }
             >
               <Download className={`w-4 h-4 ${uploadedCount === totalCount ? 'text-amber-400' : 'text-slate-400'}`} />

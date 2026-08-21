@@ -17,7 +17,8 @@ export type DocumentCategoryId =
   | 'action_point_extraction'
   | 'review_data_analysis'
   | 'ppt_creation_template'
-  | 'inspection_checklist';
+  | 'inspection_checklist'
+  | 'counter_affidavit';
 
 export interface DocumentCategoryConfig {
   id: DocumentCategoryId;
@@ -81,6 +82,7 @@ export interface UserWorkspaceData {
   signatory2Title: string;
   singleParticipant: Participant;
   groupParticipants: Participant[];
+  customEmblemUrl?: string;
   currentStep: 'upload' | 'participants' | 'certificate';
   lastUpdated: string;
 }
@@ -105,6 +107,7 @@ export interface CertificateSubmission {
   mode: 'individual' | 'group';
   organization: string;
   theme: CertificateTheme;
+  customEmblemUrl?: string;
   signatory1Name: string;
   signatory1Title: string;
   signatory2Name: string;

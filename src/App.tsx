@@ -43,6 +43,9 @@ export default function App() {
   // Certificate Theme
   const [theme, setTheme] = useState<CertificateTheme>('gold');
 
+  // Custom Top Emblem / Logo (Optional uploaded image, defaults to State Emblem)
+  const [customEmblemUrl, setCustomEmblemUrl] = useState<string>('');
+
   // Organization & Signatories
   const [organizationName, setOrganizationName] = useState('AI Workshop Program');
   const [signatory1Name, setSignatory1Name] = useState('Thiru . Vishu Mahajan I.A.S');
@@ -120,6 +123,7 @@ export default function App() {
     setDocuments(ws.documents);
     setMode(ws.mode);
     setTheme(ws.theme);
+    setCustomEmblemUrl(ws.customEmblemUrl || '');
     setOrganizationName(ws.organizationName || 'AI Workshop Program');
     setSignatory1Name(ws.signatory1Name || 'Thiru . Vishu Mahajan I.A.S');
     setSignatory1Title(ws.signatory1Title || 'Authorized Signatory');
@@ -176,6 +180,7 @@ export default function App() {
       signatory2Title,
       singleParticipant,
       groupParticipants,
+      customEmblemUrl,
       currentStep,
       lastUpdated: new Date().toISOString(),
     };
@@ -193,6 +198,7 @@ export default function App() {
     signatory2Title,
     singleParticipant,
     groupParticipants,
+    customEmblemUrl,
     currentStep,
   ]);
 
@@ -203,6 +209,7 @@ export default function App() {
   const handleLogout = () => {
     setActiveUserEmail(null);
     setUser(null);
+    setCustomEmblemUrl('');
     setDocuments(() => {
       const initial: Partial<Record<DocumentCategoryId, UploadedDocument | null>> = {};
       DOCUMENT_CATEGORIES.forEach((cat) => {
@@ -286,6 +293,8 @@ export default function App() {
             defaultOrganization={user.organization}
             theme={theme}
             onThemeChange={setTheme}
+            customEmblemUrl={customEmblemUrl}
+            onCustomEmblemUrlChange={setCustomEmblemUrl}
             mode={mode}
             onModeChange={setMode}
             singleParticipant={singleParticipant}
@@ -314,6 +323,8 @@ export default function App() {
             mode={mode}
             singleParticipant={singleParticipant}
             groupParticipants={groupParticipants}
+            customEmblemUrl={customEmblemUrl}
+            onCustomEmblemUrlChange={setCustomEmblemUrl}
             signatory1Name={signatory1Name}
             signatory1Title={signatory1Title}
             signatory2Name={signatory2Name}
