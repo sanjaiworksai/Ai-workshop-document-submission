@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { Participant, CertificateTheme, DocumentCategoryId, UploadedDocument } from '../types';
 import { DOCUMENT_CATEGORIES } from '../data/categories';
+import { OFFICIAL_SEAL_BASE64 } from '../assets/sealBase64';
 
 interface GenerateOptions {
   submissionTitle?: string;
@@ -228,45 +229,38 @@ function drawCertificatePage(
   doc.setTextColor(22, 101, 52);
   doc.text('✓ Authenticated & Digitally Certified', 26, bottomY + 24.2);
 
-  // Center: Official Emblem / Seal
+  // Center: Official Emblem / Seal (AI Workshop Program Official Seal)
   const sealCenterX = width / 2;
-  const sealCenterY = bottomY + 14;
+  const sealSize = 24; // 24mm x 24mm
+  const sealX = sealCenterX - sealSize / 2;
+  const sealY = bottomY - 1;
 
-  // Outer scalloped ring
-  doc.setDrawColor(colors.seal[0], colors.seal[1], colors.seal[2]);
-  doc.setLineWidth(1.2);
-  doc.circle(sealCenterX, sealCenterY, 15, 'D');
-  doc.setLineWidth(0.4);
-  doc.circle(sealCenterX, sealCenterY, 13.5, 'D');
-  
-  // Seal center fill
-  doc.setFillColor(colors.seal[0], colors.seal[1], colors.seal[2]);
-  doc.circle(sealCenterX, sealCenterY, 11, 'F');
+  try {
+    // Add high resolution Official Seal circular emblem image
+    doc.addImage(OFFICIAL_SEAL_BASE64, 'JPEG', sealX, sealY, sealSize, sealSize);
+  } catch {
+    // Fallback if image fails in pdf context
+    doc.setDrawColor(153, 27, 27);
+    doc.setLineWidth(1.2);
+    doc.circle(sealCenterX, sealY + sealSize / 2, 12, 'D');
+    doc.setFillColor(153, 27, 27);
+    doc.circle(sealCenterX, sealY + sealSize / 2, 10, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6);
+    doc.text('OFFICIAL SEAL', sealCenterX, sealY + sealSize / 2 + 1, { align: 'center' });
+  }
 
-  // Seal inner text
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('times', 'bold');
-  doc.setFontSize(6.5);
-  doc.text('OFFICIAL', sealCenterX, sealCenterY - 3, { align: 'center' });
-  doc.setFontSize(8.5);
-  doc.text('SEAL', sealCenterX, sealCenterY + 2, { align: 'center' });
-  doc.setFontSize(5);
-  doc.text('AUTHENTICATED', sealCenterX, sealCenterY + 6, { align: 'center' });
+  // Official Seal Labels below
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(153, 27, 27); // #991b1b crimson
+  doc.text('OFFICIAL SEAL', sealCenterX, sealY + sealSize + 4, { align: 'center' });
 
-  // Seal ribbon streamers
-  doc.setFillColor(colors.accent[0], colors.accent[1], colors.accent[2]);
-  doc.triangle(
-    sealCenterX - 8, sealCenterY + 13,
-    sealCenterX - 3, sealCenterY + 13,
-    sealCenterX - 6, sealCenterY + 23,
-    'F'
-  );
-  doc.triangle(
-    sealCenterX + 3, sealCenterY + 13,
-    sealCenterX + 8, sealCenterY + 13,
-    sealCenterX + 6, sealCenterY + 23,
-    'F'
-  );
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6);
+  doc.setTextColor(100, 116, 139);
+  doc.text('Authenticated Record', sealCenterX, sealY + sealSize + 7, { align: 'center' });
 
   // Right: Single Signature (Thiru . Vishu Mahajan I.A.S)
   const sigX = width - 55;
@@ -440,8 +434,8 @@ function drawGroupMasterRosterPage(
     doc.text(cat.title, px + 22, py + 4.2);
   });
 
-  // Footer: Left Official Status & Right Single Signature
-  const footerY = height - 30;
+  // Footer: Left Official Status, Center Official Seal, Right Single Signature
+  const footerY = height - 32;
   
   // Left: Verification status
   doc.setFont('helvetica', 'bold');
@@ -453,6 +447,19 @@ function drawGroupMasterRosterPage(
   doc.setTextColor(100, 116, 139);
   doc.text(`Authenticated Roster • Date: ${new Date().toLocaleDateString()}`, tableX, footerY + 6);
   doc.text('Status: All listed participants verified and cleared for certification', tableX, footerY + 10);
+
+  // Center: Official Seal Emblem
+  const centerSealX = width / 2;
+  const sealRosterSize = 20;
+  try {
+    doc.addImage(OFFICIAL_SEAL_BASE64, 'JPEG', centerSealX - sealRosterSize / 2, footerY - 2, sealRosterSize, sealRosterSize);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6);
+    doc.setTextColor(153, 27, 27);
+    doc.text('OFFICIAL SEAL', centerSealX, footerY + sealRosterSize + 2, { align: 'center' });
+  } catch {
+    // ignore
+  }
 
   // Right: Single Signature
   const sigX = width - tableX - 35;

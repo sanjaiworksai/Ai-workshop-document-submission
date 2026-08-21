@@ -1,6 +1,8 @@
 import { useState, useRef, ElementType } from 'react';
 import { DOCUMENT_CATEGORIES } from '../data/categories';
 import { DocumentCategoryId, UploadedDocument } from '../types';
+import { GO_SUMMARY_PDF_BASE64 } from '../data/goSummaryBase64';
+import { ACTION_POINTS_PDF_BASE64 } from '../data/actionPointsBase64';
 import {
   Upload,
   FileText,
@@ -62,6 +64,60 @@ export function DocumentUploadPortal({
   const progressPercent = Math.round((uploadedCount / totalCount) * 100);
   const isAllUploaded = uploadedCount === totalCount;
   const canProceed = isAllUploaded;
+
+  const handleDownloadReference = (category: (typeof DOCUMENT_CATEGORIES)[0]) => {
+    if (category.id === 'go_summary') {
+      try {
+        const byteCharacters = atob(GO_SUMMARY_PDF_BASE64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'G.O Summary.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        return;
+      } catch {
+        // fallback to direct download URL
+      }
+    }
+
+    if (category.id === 'action_point_extraction') {
+      try {
+        const byteCharacters = atob(ACTION_POINTS_PDF_BASE64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Action Point Extraction.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        return;
+      } catch {
+        // fallback to direct download URL
+      }
+    }
+
+    if (category.referenceDownloadUrl) {
+      window.open(category.referenceDownloadUrl, '_blank');
+    } else if (category.referenceUrl) {
+      window.open(category.referenceUrl, '_blank');
+    }
+  };
 
   const triggerAutoAdvance = () => {
     setIsAutoAdvancing(true);
@@ -295,7 +351,11 @@ export function DocumentUploadPortal({
                 {cat.referenceUrl && (
                   <div
                     className={`mb-4 p-3 rounded-2xl border text-xs flex items-center justify-between gap-3 shadow-xs ${
-                      cat.referenceFormat === 'xlsx'
+                      cat.id === 'go_summary'
+                        ? 'bg-sky-50/90 border-sky-200 text-sky-950'
+                        : cat.id === 'action_point_extraction'
+                        ? 'bg-rose-50/90 border-rose-200 text-rose-950'
+                        : cat.referenceFormat === 'xlsx'
                         ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900'
                         : 'bg-amber-50/80 border-amber-200 text-amber-900'
                     }`}
@@ -303,7 +363,11 @@ export function DocumentUploadPortal({
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div
                         className={`w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 ${
-                          cat.referenceFormat === 'xlsx'
+                          cat.id === 'go_summary'
+                            ? 'bg-sky-100 border-sky-200 text-sky-700'
+                            : cat.id === 'action_point_extraction'
+                            ? 'bg-rose-100 border-rose-200 text-rose-700'
+                            : cat.referenceFormat === 'xlsx'
                             ? 'bg-emerald-100 border-emerald-200 text-emerald-700'
                             : 'bg-amber-100 border-amber-200 text-amber-700'
                         }`}
@@ -317,16 +381,32 @@ export function DocumentUploadPortal({
                       <div className="min-w-0">
                         <p
                           className={`text-xs font-bold truncate ${
-                            cat.referenceFormat === 'xlsx' ? 'text-emerald-800' : 'text-amber-800'
+                            cat.id === 'go_summary'
+                              ? 'text-sky-900'
+                              : cat.id === 'action_point_extraction'
+                              ? 'text-rose-900'
+                              : cat.referenceFormat === 'xlsx'
+                              ? 'text-emerald-800'
+                              : 'text-amber-800'
                           }`}
                         >
                           {cat.referenceFormat === 'xlsx'
                             ? 'Source Dataset (Excel Sheet)'
+                            : cat.id === 'go_summary'
+                            ? 'G.O. Summary Reference PDF'
+                            : cat.id === 'action_point_extraction'
+                            ? 'Action Point Extraction PDF'
                             : 'Source Document (PDF)'}
                         </p>
                         <p
                           className={`text-[10px] truncate ${
-                            cat.referenceFormat === 'xlsx' ? 'text-emerald-600' : 'text-amber-600'
+                            cat.id === 'go_summary'
+                              ? 'text-sky-700'
+                              : cat.id === 'action_point_extraction'
+                              ? 'text-rose-700'
+                              : cat.referenceFormat === 'xlsx'
+                              ? 'text-emerald-600'
+                              : 'text-amber-600'
                           }`}
                         >
                           {cat.referenceFormat === 'xlsx'
@@ -336,30 +416,40 @@ export function DocumentUploadPortal({
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <a
-                        href={cat.referenceDownloadUrl || cat.referenceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        download={`${cat.code}_${cat.title.replace(/\s+/g, '_')}.${
-                          cat.referenceFormat || 'pdf'
-                        }`}
+                      <button
+                        type="button"
+                        onClick={() => handleDownloadReference(cat)}
                         id={`drive-download-link-${cat.id}`}
                         className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white font-bold text-xs transition-all shadow-xs cursor-pointer ${
-                          cat.referenceFormat === 'xlsx'
+                          cat.id === 'go_summary'
+                            ? 'bg-sky-700 hover:bg-sky-800'
+                            : cat.id === 'action_point_extraction'
+                            ? 'bg-rose-700 hover:bg-rose-800'
+                            : cat.referenceFormat === 'xlsx'
                             ? 'bg-emerald-700 hover:bg-emerald-800'
                             : 'bg-amber-600 hover:bg-amber-700'
                         }`}
                         title={
-                          cat.referenceFormat === 'xlsx'
+                          cat.id === 'go_summary'
+                            ? 'Click to download G.O Summary.pdf directly'
+                            : cat.id === 'action_point_extraction'
+                            ? 'Click to download Action Point Extraction.pdf directly'
+                            : cat.referenceFormat === 'xlsx'
                             ? 'Click to download reference Excel sheet (.xlsx) directly'
-                            : 'Click to download reference PDF directly'
+                            : `Click to download reference PDF for ${cat.title} directly`
                         }
                       >
                         <Download className="w-3.5 h-3.5" />
                         <span>
-                          {cat.referenceFormat === 'xlsx' ? 'Download Excel' : 'Download PDF'}
+                          {cat.referenceFormat === 'xlsx'
+                            ? 'Download Excel'
+                            : cat.id === 'go_summary'
+                            ? 'Download G.O. Summary'
+                            : cat.id === 'action_point_extraction'
+                            ? 'Download Action Points'
+                            : 'Download PDF'}
                         </span>
-                      </a>
+                      </button>
                     </div>
                   </div>
                 )}

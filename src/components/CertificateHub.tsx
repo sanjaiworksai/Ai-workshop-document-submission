@@ -6,6 +6,7 @@ import {
   downloadGroupCertificatesBundle,
 } from '../utils/pdfGenerator';
 import confetti from 'canvas-confetti';
+import { OfficialSeal } from './OfficialSeal';
 import {
   Award,
   Download,
@@ -382,20 +383,8 @@ export function CertificateHub({
                   </span>
                 </div>
 
-                {/* Center Verification Seal */}
-                <div className="text-center flex flex-col items-center">
-                  <div
-                    className={`w-12 h-12 rounded-full ${themeStyles.sealBg} text-white flex items-center justify-center shadow-md mb-1`}
-                  >
-                    <ShieldCheck className="w-6 h-6" />
-                  </div>
-                  <span className="text-[9px] font-mono uppercase tracking-widest text-slate-600 font-bold">
-                    Official Seal
-                  </span>
-                  <span className="text-[9px] text-slate-500">
-                    Authenticated Record
-                  </span>
-                </div>
+                {/* Center Verification Seal: Official Seal Authenticated Record */}
+                <OfficialSeal size="md" showLabels={true} />
 
                 {/* Right: Sole Authorized Signatory */}
                 <div className="text-center sm:text-right">
