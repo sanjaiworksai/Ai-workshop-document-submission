@@ -2,7 +2,9 @@ import { useState, useRef, ElementType } from 'react';
 import { DOCUMENT_CATEGORIES } from '../data/categories';
 import { DocumentCategoryId, UploadedDocument } from '../types';
 import { GO_SUMMARY_PDF_BASE64 } from '../data/goSummaryBase64';
-import { ACTION_POINTS_PDF_BASE64 } from '../data/actionPointsBase64';
+import { ACTION_POINTS_DOCX_BASE64 } from '../data/actionPointsBase64';
+import { INSPECTION_REPORT_DOCX_BASE64 } from '../data/inspectionReportBase64';
+import { LETTER_DRAFTING_DOCX_BASE64 } from '../data/letterDraftingBase64';
 import {
   Upload,
   FileText,
@@ -91,17 +93,69 @@ export function DocumentUploadPortal({
 
     if (category.id === 'action_point_extraction') {
       try {
-        const byteCharacters = atob(ACTION_POINTS_PDF_BASE64);
+        const byteCharacters = atob(ACTION_POINTS_DOCX_BASE64);
         const byteNumbers = new Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
         const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        const blob = new Blob([byteArray], {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'Action Point Extraction.pdf';
+        a.download = 'Action Point Extraction.docx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        return;
+      } catch {
+        // fallback to direct download URL
+      }
+    }
+
+    if (category.id === 'inspection_report') {
+      try {
+        const byteCharacters = atob(INSPECTION_REPORT_DOCX_BASE64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Inspection Report.docx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        return;
+      } catch {
+        // fallback to direct download URL
+      }
+    }
+
+    if (category.id === 'letter_drafting') {
+      try {
+        const byteCharacters = atob(LETTER_DRAFTING_DOCX_BASE64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Letter Drafting.docx';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -347,7 +401,7 @@ export function DocumentUploadPortal({
                   {cat.shortDesc}
                 </p>
 
-                {/* Reference Source Document URL (Direct Download from Google Drive / Sheets) */}
+                {/* Reference Source Document URL (Direct Download from Google Drive / Docs / Sheets) */}
                 {cat.referenceUrl && (
                   <div
                     className={`mb-4 p-3 rounded-2xl border text-xs flex items-center justify-between gap-3 shadow-xs ${
@@ -355,6 +409,10 @@ export function DocumentUploadPortal({
                         ? 'bg-sky-50/90 border-sky-200 text-sky-950'
                         : cat.id === 'action_point_extraction'
                         ? 'bg-rose-50/90 border-rose-200 text-rose-950'
+                        : cat.id === 'inspection_report'
+                        ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950'
+                        : cat.id === 'letter_drafting'
+                        ? 'bg-purple-50/90 border-purple-200 text-purple-950'
                         : cat.referenceFormat === 'xlsx'
                         ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900'
                         : 'bg-amber-50/80 border-amber-200 text-amber-900'
@@ -367,6 +425,10 @@ export function DocumentUploadPortal({
                             ? 'bg-sky-100 border-sky-200 text-sky-700'
                             : cat.id === 'action_point_extraction'
                             ? 'bg-rose-100 border-rose-200 text-rose-700'
+                            : cat.id === 'inspection_report'
+                            ? 'bg-emerald-100 border-emerald-200 text-emerald-700'
+                            : cat.id === 'letter_drafting'
+                            ? 'bg-purple-100 border-purple-200 text-purple-700'
                             : cat.referenceFormat === 'xlsx'
                             ? 'bg-emerald-100 border-emerald-200 text-emerald-700'
                             : 'bg-amber-100 border-amber-200 text-amber-700'
@@ -374,6 +436,8 @@ export function DocumentUploadPortal({
                       >
                         {cat.referenceFormat === 'xlsx' ? (
                           <FileSpreadsheet className="w-4 h-4" />
+                        ) : cat.referenceFormat === 'docx' ? (
+                          <FileText className="w-4 h-4" />
                         ) : (
                           <Link2 className="w-4 h-4" />
                         )}
@@ -385,6 +449,10 @@ export function DocumentUploadPortal({
                               ? 'text-sky-900'
                               : cat.id === 'action_point_extraction'
                               ? 'text-rose-900'
+                              : cat.id === 'inspection_report'
+                              ? 'text-emerald-900'
+                              : cat.id === 'letter_drafting'
+                              ? 'text-purple-900'
                               : cat.referenceFormat === 'xlsx'
                               ? 'text-emerald-800'
                               : 'text-amber-800'
@@ -395,7 +463,11 @@ export function DocumentUploadPortal({
                             : cat.id === 'go_summary'
                             ? 'G.O. Summary Reference PDF'
                             : cat.id === 'action_point_extraction'
-                            ? 'Action Point Extraction PDF'
+                            ? 'Action Point Extraction (Word .docx)'
+                            : cat.id === 'inspection_report'
+                            ? 'Inspection Report (Word .docx)'
+                            : cat.id === 'letter_drafting'
+                            ? 'Letter Drafting Model (Word .docx)'
                             : 'Source Document (PDF)'}
                         </p>
                         <p
@@ -404,6 +476,10 @@ export function DocumentUploadPortal({
                               ? 'text-sky-700'
                               : cat.id === 'action_point_extraction'
                               ? 'text-rose-700'
+                              : cat.id === 'inspection_report'
+                              ? 'text-emerald-700'
+                              : cat.id === 'letter_drafting'
+                              ? 'text-purple-700'
                               : cat.referenceFormat === 'xlsx'
                               ? 'text-emerald-600'
                               : 'text-amber-600'
@@ -411,6 +487,8 @@ export function DocumentUploadPortal({
                         >
                           {cat.referenceFormat === 'xlsx'
                             ? 'Google Sheets (.xlsx)'
+                            : cat.referenceFormat === 'docx'
+                            ? 'Microsoft Word (.docx)'
                             : 'Google Drive Statutory File'}
                         </p>
                       </div>
@@ -425,6 +503,10 @@ export function DocumentUploadPortal({
                             ? 'bg-sky-700 hover:bg-sky-800'
                             : cat.id === 'action_point_extraction'
                             ? 'bg-rose-700 hover:bg-rose-800'
+                            : cat.id === 'inspection_report'
+                            ? 'bg-emerald-700 hover:bg-emerald-800'
+                            : cat.id === 'letter_drafting'
+                            ? 'bg-purple-700 hover:bg-purple-800'
                             : cat.referenceFormat === 'xlsx'
                             ? 'bg-emerald-700 hover:bg-emerald-800'
                             : 'bg-amber-600 hover:bg-amber-700'
@@ -433,7 +515,11 @@ export function DocumentUploadPortal({
                           cat.id === 'go_summary'
                             ? 'Click to download G.O Summary.pdf directly'
                             : cat.id === 'action_point_extraction'
-                            ? 'Click to download Action Point Extraction.pdf directly'
+                            ? 'Click to download Action Point Extraction.docx directly'
+                            : cat.id === 'inspection_report'
+                            ? 'Click to download Inspection Report.docx directly'
+                            : cat.id === 'letter_drafting'
+                            ? 'Click to download Letter Drafting.docx directly'
                             : cat.referenceFormat === 'xlsx'
                             ? 'Click to download reference Excel sheet (.xlsx) directly'
                             : `Click to download reference PDF for ${cat.title} directly`
@@ -445,8 +531,10 @@ export function DocumentUploadPortal({
                             ? 'Download Excel'
                             : cat.id === 'go_summary'
                             ? 'Download G.O. Summary'
-                            : cat.id === 'action_point_extraction'
-                            ? 'Download Action Points'
+                            : cat.id === 'action_point_extraction' ||
+                              cat.id === 'inspection_report' ||
+                              cat.id === 'letter_drafting'
+                            ? 'Download Word (.docx)'
                             : 'Download PDF'}
                         </span>
                       </button>

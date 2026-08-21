@@ -46,9 +46,6 @@ export function Header({
                 <span className="font-bold text-sm sm:text-base text-slate-900 tracking-tight font-serif">
                   AI-Workshop Submission portal
                 </span>
-                <span className="hidden md:inline-flex px-2 py-0.5 text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-md font-mono">
-                  Isolated Workspace
-                </span>
               </div>
               <p className="text-[11px] text-slate-500 truncate max-w-xs sm:max-w-md">
                 {user.organization || 'AI Workshop Program'}

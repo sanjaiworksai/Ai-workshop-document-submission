@@ -333,7 +333,7 @@ export default function App() {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <p className="font-mono text-[11px] text-slate-600">
-              Isolated Workspace: <span className="text-indigo-700 font-bold">{user.email}</span>
+              <span className="text-indigo-700 font-bold">{user.email}</span>
             </p>
           </div>
         </div>
