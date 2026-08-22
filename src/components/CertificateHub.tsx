@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent } from 'react';
+import { useState } from 'react';
 import { Participant, CertificateTheme, DocumentCategoryId, UploadedDocument } from '../types';
 import { DOCUMENT_CATEGORIES } from '../data/categories';
 import {
@@ -12,23 +12,11 @@ import {
   Award,
   Download,
   Users,
-  User,
   CheckCircle2,
   Printer,
   Sparkles,
-  QrCode,
-  ShieldCheck,
   ArrowLeft,
-  FileCheck,
-  Building,
-  Briefcase,
-  FileText,
-  ExternalLink,
   AlertCircle,
-  UploadCloud,
-  ImageIcon,
-  RotateCcw,
-  Camera,
 } from 'lucide-react';
 
 interface CertificateHubProps {
@@ -54,11 +42,8 @@ export function CertificateHub({
   singleParticipant,
   groupParticipants,
   customEmblemUrl,
-  onCustomEmblemUrlChange,
   signatory1Name,
   signatory1Title,
-  signatory2Name,
-  signatory2Title,
   organizationName,
   onBackToParticipants,
 }: CertificateHubProps) {
@@ -66,11 +51,8 @@ export function CertificateHub({
   const [selectedGroupPreviewIndex, setSelectedGroupPreviewIndex] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [downloadSuccessMessage, setDownloadSuccessMessage] = useState('');
-  const [isDraggingEmblem, setIsDraggingEmblem] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const displayedEmblem = customEmblemUrl || TAMIL_NADU_EMBLEM_BASE64;
-  const isCustomEmblemActive = Boolean(customEmblemUrl && customEmblemUrl.trim().length > 0);
 
   const activeParticipant: Participant =
     mode === 'individual'
@@ -79,38 +61,6 @@ export function CertificateHub({
 
   const uploadedCount = Object.values(documents).filter(Boolean).length;
   const totalCount = DOCUMENT_CATEGORIES.length;
-
-  const handleImageFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload a valid image file (PNG, JPG, JPEG, SVG, WebP).');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      if (result && onCustomEmblemUrlChange) {
-        onCustomEmblemUrlChange(result);
-        setDownloadSuccessMessage('Top certificate image updated successfully!');
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleImageFile(file);
-    }
-    // reset input
-    if (e.target) e.target.value = '';
-  };
-
-  const handleResetEmblem = () => {
-    if (onCustomEmblemUrlChange) {
-      onCustomEmblemUrlChange('');
-      setDownloadSuccessMessage('Reset to default Tamil Nadu State Emblem.');
-    }
-  };
 
   const triggerCelebration = () => {
     confetti({
@@ -349,15 +299,6 @@ export function CertificateHub({
             id="certificate-print-area"
             className={`bg-[#fffdfa] border-[8px] ${themeStyles.border} rounded-2xl p-6 sm:p-10 shadow-xl relative overflow-hidden text-slate-900`}
           >
-            {/* Hidden file input for manual image upload */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
-              className="hidden"
-              onChange={handleFileInputChange}
-            />
-
             {/* Inner Decorative Border */}
             <div
               className={`border-2 ${themeStyles.innerBorder} rounded-xl p-6 sm:p-8 h-full flex flex-col justify-between relative bg-white/70`}
@@ -369,22 +310,14 @@ export function CertificateHub({
 
               {/* Top Certificate Header */}
               <div className="text-center relative z-10 flex flex-col items-center">
-                {/* Top Middle Emblem (Interactive: Click to upload/change) */}
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="group relative mb-2.5 w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center cursor-pointer transition-transform hover:scale-105 duration-200"
-                  title="Click to manually upload / change the top middle certificate image"
-                >
+                {/* Top Middle Emblem */}
+                <div className="mb-2.5 w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
                   <img
                     src={displayedEmblem}
-                    alt="Certificate Top Middle Emblem"
+                    alt="Official Emblem"
                     referrerPolicy="no-referrer"
-                    className="w-full h-full object-contain select-none drop-shadow-sm transition-opacity group-hover:opacity-85"
+                    className="w-full h-full object-contain select-none drop-shadow-xs"
                   />
-                  <div className="absolute inset-0 bg-slate-900/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-1 text-center shadow-md">
-                    <Camera className="w-5 h-5 mb-0.5" />
-                    <span className="text-[9px] font-bold leading-tight">Change Image</span>
-                  </div>
                 </div>
 
                 <p className="text-xs sm:text-sm font-serif uppercase tracking-[0.25em] text-slate-700 font-bold">
@@ -474,101 +407,8 @@ export function CertificateHub({
           </div>
         </div>
 
-        {/* Right 1 Col: Download & Top Emblem Controls */}
+        {/* Right 1 Col: Download Actions & Verification Details */}
         <div className="space-y-6">
-          {/* Top Middle Emblem Upload & Management Card */}
-          <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-indigo-600" />
-                Certificate Top Image
-              </h3>
-              {isCustomEmblemActive ? (
-                <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-                  Custom Image
-                </span>
-              ) : (
-                <span className="text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded-full">
-                  Official State Emblem
-                </span>
-              )}
-            </div>
-
-            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-3.5">
-              <div className="w-14 h-14 rounded-xl bg-white border border-slate-200 p-1.5 flex items-center justify-center shrink-0 shadow-xs">
-                <img
-                  src={displayedEmblem}
-                  alt="Top Emblem Preview"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-slate-800 truncate">
-                  {isCustomEmblemActive ? 'Custom Uploaded Image' : 'Official State Emblem'}
-                </p>
-                <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
-                  Displayed at top-middle of certificate &amp; PDF
-                </p>
-              </div>
-            </div>
-
-            {/* Drag and drop / Manual upload zone */}
-            <div
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDraggingEmblem(true);
-              }}
-              onDragLeave={(e) => {
-                e.preventDefault();
-                setIsDraggingEmblem(false);
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                setIsDraggingEmblem(false);
-                const file = e.dataTransfer.files?.[0];
-                if (file) handleImageFile(file);
-              }}
-              onClick={() => fileInputRef.current?.click()}
-              className={`p-4 rounded-2xl border-2 border-dashed transition text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 ${
-                isDraggingEmblem
-                  ? 'border-indigo-500 bg-indigo-50/70'
-                  : 'border-slate-300 hover:border-indigo-400 bg-slate-50/60 hover:bg-indigo-50/30'
-              }`}
-            >
-              <UploadCloud className="w-5 h-5 text-indigo-600" />
-              <p className="text-xs font-bold text-slate-800">
-                Click or Drag Image to Upload
-              </p>
-              <p className="text-[10px] text-slate-500">
-                PNG, JPG, SVG, WebP supported
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex-1 py-2.5 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-xs transition"
-              >
-                <UploadCloud className="w-3.5 h-3.5" />
-                Upload New Image
-              </button>
-
-              {isCustomEmblemActive && (
-                <button
-                  type="button"
-                  onClick={handleResetEmblem}
-                  className="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center justify-center gap-1 cursor-pointer transition"
-                  title="Reset to official Tamil Nadu emblem"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Reset
-                </button>
-              )}
-            </div>
-          </div>
-
           {/* Individual PDF Download Action */}
           <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-4">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">

@@ -38,6 +38,7 @@ export interface DocumentCategoryConfig {
   iconBg?: string;
   glowShadow?: string;
   promptText?: string;
+  promptUrl?: string;
 }
 
 export interface UploadedDocument {

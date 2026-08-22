@@ -402,13 +402,27 @@ export function DocumentUploadPortal({
                       <IconComp className="w-6 h-6" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-md border ${cat.badgeColor || 'bg-slate-100 text-slate-700 border-slate-200'}`}>
                           {cat.code}
                         </span>
                         <span className="text-[11px] text-slate-500 font-mono font-semibold">
                           Heading {idx + 1}/{totalCount}
                         </span>
+                        {cat.promptUrl && (
+                          <a
+                            href={cat.promptUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            id={`badge-prompt-${cat.id}`}
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition cursor-pointer shadow-2xs"
+                            title="Open Prompt Document"
+                          >
+                            <Sparkles className="w-3 h-3 text-indigo-600" />
+                            <span>Prompt</span>
+                            <ExternalLink className="w-2.5 h-2.5 text-indigo-500" />
+                          </a>
+                        )}
                       </div>
                       {/* Increased Module Heading Size */}
                       <h2 className="text-xl sm:text-2xl font-bold text-slate-900 font-serif tracking-tight leading-snug">
@@ -536,7 +550,21 @@ export function DocumentUploadPortal({
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
+                      {cat.promptUrl && (
+                        <a
+                          href={cat.promptUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          id={`prompt-btn-${cat.id}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold text-xs transition-all shadow-xs cursor-pointer"
+                          title="Open statutory AI prompt for this module"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Prompt</span>
+                          <ExternalLink className="w-3 h-3 text-indigo-400" />
+                        </a>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleDownloadReference(cat)}

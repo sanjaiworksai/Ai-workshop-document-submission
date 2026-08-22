@@ -68,6 +68,7 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     accentColor: 'text-emerald-800',
     iconBg: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     glowShadow: 'hover:border-emerald-300 hover:shadow-md',
+    promptUrl: 'https://docs.google.com/document/d/1pipWrI-e_dwLeAEp7GNDUX0W063YrEoJBl74qdH_QGg/edit?usp=sharing',
     promptText: `I have uploaded three documents in Tamil regarding the removal of five dangerous palm trees situated near a church.
 
 Read and translate all three documents into English. Based on the exact details in them, prepare an English Conditional Order under Section 152(1)(d) of the BNSS, 2023, for issue by the Sub-Divisional Magistrate, Thoothukudi.
@@ -149,6 +150,7 @@ Give the final draft in formal English, ready for official use.`,
     accentColor: 'text-orange-800',
     iconBg: 'bg-orange-100 text-orange-800 border-orange-200',
     glowShadow: 'hover:border-orange-300 hover:shadow-md',
+    promptUrl: 'https://docs.google.com/document/d/1pipWrI-e_dwLeAEp7GNDUX0W063YrEoJBl74qdH_QGg/edit?usp=sharing',
   },
   {
     id: 'inspection_checklist',
@@ -185,6 +187,7 @@ Give the final draft in formal English, ready for official use.`,
     accentColor: 'text-blue-800',
     iconBg: 'bg-blue-100 text-blue-800 border-blue-200',
     glowShadow: 'hover:border-blue-300 hover:shadow-md',
+    promptUrl: 'https://docs.google.com/document/d/1pipWrI-e_dwLeAEp7GNDUX0W063YrEoJBl74qdH_QGg/edit?usp=sharing',
   },
 ];
 
