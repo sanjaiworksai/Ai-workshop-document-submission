@@ -37,6 +37,7 @@ export interface DocumentCategoryConfig {
   accentColor?: string;
   iconBg?: string;
   glowShadow?: string;
+  promptText?: string;
 }
 
 export interface UploadedDocument {

@@ -28,6 +28,11 @@ import {
   Link2,
   Download,
   FileSpreadsheet,
+  Copy,
+  Check,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { DocumentPreviewModal } from './DocumentPreviewModal';
 

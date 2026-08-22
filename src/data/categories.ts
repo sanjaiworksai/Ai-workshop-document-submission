@@ -68,6 +68,15 @@ export const DOCUMENT_CATEGORIES: DocumentCategoryConfig[] = [
     accentColor: 'text-emerald-800',
     iconBg: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     glowShadow: 'hover:border-emerald-300 hover:shadow-md',
+    promptText: `I have uploaded three documents in Tamil regarding the removal of five dangerous palm trees situated near a church.
+
+Read and translate all three documents into English. Based on the exact details in them, prepare an English Conditional Order under Section 152(1)(d) of the BNSS, 2023, for issue by the Sub-Divisional Magistrate, Thoothukudi.
+
+The order should direct the responsible person either to remove the trees safely within the specified time or to appear and show cause why the order should not be made absolute.
+
+Use the correct names, dates, reference numbers, location, church and festival details from the documents. Do not assume any missing facts. Mention unclear particulars separately.
+
+Give the final draft in formal English, ready for official use.`,
   },
   {
     id: 'letter_drafting',
